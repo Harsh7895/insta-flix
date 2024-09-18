@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "../styles/login.css";
 import { toast } from "react-hot-toast";
-import axios from "axios";
 
 const Url = "http://localhost:3000/api/v1/user";
 
@@ -24,7 +23,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
   const handleRegisterOrLogin = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${Url}/${loginOrRegister}`, {
+      const res = await fetch(`${Url}/${loginOrRegister}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
