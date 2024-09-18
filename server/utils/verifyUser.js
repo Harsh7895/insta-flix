@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ErrorHandler } from "./error";
+import { ErrorHandler } from "./error.js";
 
 export const verifyUser = async (req, res, next) => {
   const authHeader =
@@ -9,7 +9,8 @@ export const verifyUser = async (req, res, next) => {
     authHeader && authHeader.startsWith("Bearer ")
       ? authHeader.substring(7)
       : null;
-  if (token) {
+
+  if (!token) {
     return next(ErrorHandler(403, "Not authorized"));
   }
 

@@ -38,6 +38,7 @@ const Home = () => {
       setActive([...active, item]);
     }
   };
+
   return (
     <div className="app">
       <div className="categories">

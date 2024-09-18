@@ -53,3 +53,20 @@ export const loginUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const logout = async (req, res, next) => {
+  try {
+    const userId = req.user;
+    const user = await User.findById(userId.id);
+    if (!user) {
+      return next(ErrorHandler(401, "Something went wrong!"));
+    }
+
+    res.removeHeader("Authorization");
+    res
+      .status(200)
+      .json({ success: true, message: "User has been signed out" });
+  } catch (error) {
+    next(error);
+  }
+};

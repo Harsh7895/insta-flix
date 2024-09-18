@@ -1,6 +1,12 @@
 import { useState } from "react";
 import "../styles/login.css";
 import { toast } from "react-hot-toast";
+import {
+  signInStart,
+  signInFailure,
+  signInSuccess,
+} from "../../redux/user/userSlice";
+import { useDispatch } from "react-redux";
 
 const Url = "http://localhost:3000/api/v1/user";
 
@@ -12,6 +18,8 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
   const [username, setUsernname] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -21,8 +29,18 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
     loginOrRegister.charAt(0).toUpperCase() + loginOrRegister.slice(1);
 
   const handleRegisterOrLogin = async () => {
+    if (!username.trim()) {
+      setError("Please enter the username first");
+      return;
+    }
+    if (!password.trim()) {
+      setError("Please enter the password first");
+      return;
+    }
+
     try {
       setLoading(true);
+      if (loginOrRegister === "login") dispatch(signInStart());
       const res = await fetch(`${Url}/${loginOrRegister}`, {
         method: "POST",
         headers: {
@@ -38,7 +56,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
       }
 
       if (loginOrRegister === "login") {
-        localStorage.setItem("token", data.token);
+        dispatch(signInSuccess({ token: data.token, ...data.rest }));
       }
 
       toast.success(data.message);
@@ -46,8 +64,11 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
       setUsernname("");
       setPassword("");
       onClose();
+      setError("");
     } catch (error) {
-      toast.error(error.message);
+      setError(error.message);
+      if (loginOrRegister === "login")
+        dispatch(signInFailure(error.message || "Failed to sign in"));
     } finally {
       setLoading(false);
     }
@@ -90,6 +111,8 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
             </button>
           </div>
         </div>
+
+        {error && <p className="error-message">{error}</p>}
         <button
           className="login-button"
           onClick={handleRegisterOrLogin}
