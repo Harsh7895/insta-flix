@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/login.css";
 import { toast } from "react-hot-toast";
 import {
@@ -8,7 +8,7 @@ import {
 } from "../../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 
-const Url = "http://localhost:3000/api/v1/user";
+const Url = "http://localhost:3000/api/v1/auth";
 
 {
   /* eslint-disable */
@@ -20,6 +20,12 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    document.body.classList.add("no-scroll");
+
+    return () => document.body.classList.remove("no-scroll");
+  }, []);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -86,6 +92,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
           <input
             type="text"
             id="username"
+            className="login-input"
             placeholder="Enter username"
             onChange={(e) => setUsernname(e.target.value)}
             value={username}
@@ -99,6 +106,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
               type={showPassword ? "text" : "password"}
               id="password"
               placeholder="Enter password"
+              className="login-input"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
               disabled={loading}

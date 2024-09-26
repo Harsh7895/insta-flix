@@ -10,6 +10,7 @@ import {
   signOutSuccess,
   signOutFailure,
 } from "../../redux/user/userSlice.js";
+import StoryCreator from "./StoryCreator.jsx";
 
 const bgColors = [
   "#ef9a9a", // Light Red
@@ -24,7 +25,7 @@ const bgColors = [
   "#e6ee9c", // Light Lime
 ];
 
-const Url = "http://localhost:3000/api/v1/user";
+const Url = "http://localhost:3000/api/v1/auth";
 
 {
   /* eslint-disable */
@@ -44,7 +45,9 @@ const Header = () => {
   const [showLoginOrRegister, setShowLoginOrRegister] = useState(false);
   const [loginOrRegister, setLoginOrRegister] = useState("");
   const [showHamburgerToggle, setShowHamburgerToggle] = useState(false);
+  const [showCreateStoryForm, setShowCreateStoryForm] = useState(false);
   const dispatch = useDispatch();
+  console.log(showCreateStoryForm);
 
   const { currentUser, loading } = useSelector((state) => state.user);
 
@@ -107,7 +110,12 @@ const Header = () => {
               <IoBookmarkSharp size={15} />
               Bookmarks
             </button>
-            <button className="addStory-btn">Add Story</button>
+            <button
+              className="addStory-btn"
+              onClick={() => setShowCreateStoryForm(true)}
+            >
+              Add Story
+            </button>
             <span
               className="profile-btn"
               style={{
@@ -133,10 +141,13 @@ const Header = () => {
       )}
       {showHamburgerToggle && (
         <HamburgerToggle
-          name={currentUser.username}
+          name={currentUser?.username}
           handleLogout={handleLogout}
           loading={loading}
         />
+      )}
+      {showCreateStoryForm && (
+        <StoryCreator onClose={() => setShowCreateStoryForm(false)} />
       )}
     </>
   );

@@ -1,5 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/home.css";
+import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import SlideCard from "../components/SlideCard";
+import StoryViewer from "../components/StoryView.jsx"; // Import StoryViewer
+import { useSearchParams } from "react-router-dom"; // Import React Router hooks
+
+const api_url = "http://localhost:3000/api/v1/story/get-user-story";
 
 const categories = [
   {
@@ -31,6 +38,16 @@ const categories = [
 
 const Home = () => {
   const [active, setActive] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [yourStory, setYourStory] = useState(null);
+  const [selectedStory, setSelectedStory] = useState(null); // New state for the selected story
+  const [selectedSlide, setSelectedSlide] = useState(null); // New state for the selected slide
+  const [isStoryViewerOpen, setStoryViewerOpen] = useState(false); // State to control StoryViewer modal visibility
+
+  const { currentUser } = useSelector((state) => state.user);
+
+  const [searchParams, setSearchParams] = useSearchParams(); // React Router hook for search params
+
   const handleSelect = (item) => {
     if (active.includes(item)) {
       setActive(active.filter((category) => category !== item));
@@ -38,6 +55,65 @@ const Home = () => {
       setActive([...active, item]);
     }
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      const getStory = async () => {
+        try {
+          setLoading(true);
+          const res = await fetch(api_url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${currentUser.token}`,
+            },
+          });
+          const data = await res.json();
+          if (!data.success) {
+            toast.error(data.message);
+          } else {
+            setYourStory(data.stories);
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error("Error fetching story.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      getStory();
+    }
+
+    if (!currentUser) setYourStory(null);
+  }, [currentUser]);
+
+  // Function to open the story viewer modal
+  const openStoryViewer = (storyId, slideId) => {
+    setSelectedStory(storyId);
+    setSelectedSlide(slideId);
+    setStoryViewerOpen(true);
+
+    // Update the URL with query parameters using React Router's setSearchParams
+    setSearchParams({ storyId, slideId });
+  };
+
+  const closeStoryViewer = () => {
+    setStoryViewerOpen(false);
+
+    // Clear query parameters when closing the StoryViewer
+    setSearchParams({});
+  };
+
+  // Read query parameters on page load
+  useEffect(() => {
+    const storyIdFromUrl = searchParams.get("storyId");
+    const slideIdFromUrl = searchParams.get("slideId");
+
+    if (storyIdFromUrl && slideIdFromUrl) {
+      openStoryViewer(storyIdFromUrl, slideIdFromUrl);
+    }
+  }, [searchParams]);
 
   return (
     <div className="app">
@@ -55,19 +131,26 @@ const Home = () => {
         ))}
       </div>
 
+      {yourStory && (
+        <>
+          <h2>Your Stories</h2>
+          <div className="stories-grid">
+            {yourStory.map((story, indx) => (
+              <SlideCard
+                key={indx}
+                mediaSrc={story.slides[0].mediaSrc}
+                description={story.slides[0].description}
+                heading={story.slides[0].heading}
+                storyId={story._id}
+                slideId={story.slides[0]._id}
+                onOpenStoryViewer={openStoryViewer} // Pass function as prop
+              />
+            ))}
+          </div>
+        </>
+      )}
       <h2>Top Stories About food</h2>
       <div className="stories-grid">
-        {/* {[1, 2, 3, 4].map((item) => (
-          <div key={item} className="story-card">
-            <img src="/placeholder.svg?height=200&width=300" alt="Story" />
-            <h3>Heading comes here</h3>
-            <p>
-              Inspirational designs, illustrations, and graphic elements from
-              the world{"'"}s best designers.
-            </p>
-          </div>
-        ))} */}
-
         <div className="no-stories">No Stories Available</div>
       </div>
 
@@ -76,21 +159,27 @@ const Home = () => {
       <h2>Top Stories About food</h2>
       <div className="stories-grid">
         {[1, 2, 3, 4].map((item) => (
-          <div key={item} className="story-card">
-            <img
-              src="https://th.bing.com/th?id=OIP.Fw-199hoU0qcuFHEL9Vf8wHaLH&w=204&h=306&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
-              alt="Story"
-            />
-            <div className="story-description">
-              <h3>Heading comes here</h3>
-              <p>
-                Inspirational designs, illustrations, and graphic elements from
-                the world{"'"}s best designers.
-              </p>
-            </div>
-          </div>
+          <SlideCard
+            key={item}
+            heading={"Heading comes here"}
+            description={
+              "Inspirational designs, illustrations, and graphic elements from the world's best designers"
+            }
+            mediaSrc={
+              "https://th.bing.com/th?id=OIP.Fw-199hoU0qcuFHEL9Vf8wHaLH&w=204&h=306&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
+            }
+          />
         ))}
       </div>
+
+      {/* Add the StoryViewer as an overlay */}
+      {isStoryViewerOpen && (
+        <StoryViewer
+          storyId={selectedStory}
+          slideId={selectedSlide}
+          onClose={closeStoryViewer} // Close the viewer
+        />
+      )}
     </div>
   );
 };

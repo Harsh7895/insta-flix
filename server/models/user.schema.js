@@ -18,8 +18,26 @@ const userSchema = new mongoose.Schema({
   ],
   bookmarks: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Story",
+      storyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Story",
+      },
+      slideId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Story",
+      },
+    },
+  ],
+  likes: [
+    {
+      storyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Story",
+      },
+      slideId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Story",
+      },
     },
   ],
 });

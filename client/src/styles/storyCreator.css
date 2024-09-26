@@ -1,0 +1,180 @@
+/* Story Creator Styles */
+.story-creator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 40px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #888;
+}
+
+.slide-limit {
+  text-align: right;
+  color: #888;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.slide-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.slide-tab {
+  padding: 10px 15px;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  position: relative;
+}
+
+.slide-tab.active {
+  background-color: #e6e6e6;
+  border-color: #2196f3;
+  color: #2196f3;
+}
+
+.remove-slide {
+  margin-left: 5px;
+  color: red;
+  cursor: pointer;
+}
+
+.add-slide {
+  padding: 10px 15px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between label and input */
+}
+
+label {
+  flex: 1; /* Allows label to take up only as much space as needed */
+  margin-bottom: 0; /* Remove bottom margin for alignment */
+  font-weight: bold;
+  color: #333; /* Adjust color for better visibility */
+}
+
+input[type="text"],
+textarea,
+select {
+  flex: 2; /* Allows input to take up more space */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+textarea {
+  height: 100px;
+  resize: none;
+}
+
+.category-note {
+  font-size: 12px;
+  color: #888;
+  margin-top: 5px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.previous,
+.next,
+.post {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.previous {
+  background-color: #7eff73;
+  margin: 0 10px;
+}
+
+.next {
+  background-color: #73abff;
+}
+
+.post {
+  background-color: #ff7373;
+}
+
+.previous:hover,
+.next:hover,
+.post:hover {
+  opacity: 0.9;
+}
+
+.slide-close-btn {
+  position: absolute;
+  height: 10px;
+  width: 10px;
+  top: 2px;
+  right: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .modal {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .previous,
+  .next,
+  .post {
+    width: 100%;
+  }
+}

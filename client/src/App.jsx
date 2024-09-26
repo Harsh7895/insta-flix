@@ -7,7 +7,7 @@ function App() {
   return (
     <Router>
       <div>
-        <Toaster />
+        <Toaster position="bottom" />
       </div>
       <Header />
       <Routes>
