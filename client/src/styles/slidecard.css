@@ -2,37 +2,17 @@
   position: relative;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
-  overflow: hidden;
   width: 257px;
   height: 459px; /* Set a height to ensure proper layout */
   cursor: pointer;
 }
 
-.story-card::before,
-.story-card::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 15%; /* 15% of the card height */
-  background: rgba(0, 0, 0, 0.6); /* Adjust opacity as needed */
-  z-index: 2; /* Ensure it appears above the image */
-}
-
-.story-card::before {
-  top: 0; /* Position at the top */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Optional shadow effect */
-}
-
-.story-card::after {
-  bottom: 0; /* Position at the bottom */
-  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5); /* Optional shadow effect */
-}
-
-.story-card img {
+.story-card img,
+.story-card video {
+  /* This rule applies to both img and video */
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* Ensures that the content covers the area */
 }
 
 .story-description {
@@ -43,11 +23,6 @@
   color: white;
   padding: 10px;
   z-index: 3; /* Ensure it appears above the shadows */
-  box-shadow: rgba(0, 0, 0, 1) 0px -23px 25px 0px inset,
-    rgba(0, 0, 0, 1) 0px -36px 30px 0px inset,
-    rgba(0, 0, 0, 1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 1) 0px 2px 1px,
-    rgba(0, 0, 0, 1) 0px 4px 2px, rgba(0, 0, 0, 1) 0px 8px 4px,
-    rgba(0, 0, 0, 1) 0px 16px 8px, rgba(0, 0, 0, 1) 0px 32px 16px;
 }
 
 .story-description h3 {
@@ -79,4 +54,25 @@
     min-width: 32px;
     margin: 0 5px 0 5px;
   }
+}
+
+.story-edit {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 40px;
+  color: black;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  z-index: 1000;
+  padding: 10px 20px;
+  border: none;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
 }

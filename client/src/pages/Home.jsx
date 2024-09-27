@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import SlideCard from "../components/SlideCard";
 import StoryViewer from "../components/StoryView.jsx"; // Import StoryViewer
 import { useSearchParams } from "react-router-dom"; // Import React Router hooks
+import LoginPopup from "../components/LoginPopup.jsx";
 
 const api_url = "http://localhost:3000/api/v1/story/get-user-story";
 
@@ -43,6 +44,7 @@ const Home = () => {
   const [selectedStory, setSelectedStory] = useState(null); // New state for the selected story
   const [selectedSlide, setSelectedSlide] = useState(null); // New state for the selected slide
   const [isStoryViewerOpen, setStoryViewerOpen] = useState(false); // State to control StoryViewer modal visibility
+  const [showLoginIfNot, setShowLoginIfNot] = useState(false);
 
   const { currentUser } = useSelector((state) => state.user);
 
@@ -139,11 +141,13 @@ const Home = () => {
               <SlideCard
                 key={indx}
                 mediaSrc={story.slides[0].mediaSrc}
+                mediaType={story.slides[0].mediaType}
                 description={story.slides[0].description}
                 heading={story.slides[0].heading}
                 storyId={story._id}
                 slideId={story.slides[0]._id}
-                onOpenStoryViewer={openStoryViewer} // Pass function as prop
+                onOpenStoryViewer={openStoryViewer}
+                showEdit={true}
               />
             ))}
           </div>
@@ -168,6 +172,7 @@ const Home = () => {
             mediaSrc={
               "https://th.bing.com/th?id=OIP.Fw-199hoU0qcuFHEL9Vf8wHaLH&w=204&h=306&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
             }
+            mediaType={"image"}
           />
         ))}
       </div>
@@ -178,6 +183,14 @@ const Home = () => {
           storyId={selectedStory}
           slideId={selectedSlide}
           onClose={closeStoryViewer} // Close the viewer
+          showLoginPage={() => setShowLoginIfNot(true)}
+        />
+      )}
+
+      {showLoginIfNot && (
+        <LoginPopup
+          onClose={() => setShowLoginIfNot(false)}
+          loginOrRegister={"login"}
         />
       )}
     </div>

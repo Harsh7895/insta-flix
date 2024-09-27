@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
-import "../styles/storyCreator.css";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
+import "../styles/storyCreator.css"; // Assuming your CSS is in this path
 
-const API_URL = "http://localhost:3000/api/v1/story/create-story";
+const API_URL = "http://localhost:3000/api/v1/story";
 
-{
-  /* eslint-disable */
-}
-export default function StoryCreator({ onClose }) {
+export default function StoryCreator({ onClose, storyId = null }) {
   const [currentSlide, setCurrentSlide] = useState(1);
   const [slides, setSlides] = useState([1, 2, 3, 4]);
   const [slideData, setSlideData] = useState(
@@ -16,45 +13,61 @@ export default function StoryCreator({ onClose }) {
       heading: "",
       description: "",
       mediaSrc: "",
-      mediaType: "", // Added field for media type
+      mediaType: "",
     }))
   );
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    document.body.classList.add("no-scroll");
-    return () => document.body.classList.remove("no-scroll");
-  }, []);
-
   const { currentUser } = useSelector((state) => state.user);
 
-  const addSlide = () => {
-    if (slides.length < 6) {
-      setSlides([...slides, slides.length + 1]);
-      setSlideData((prevData) => [
-        ...prevData,
-        { heading: "", description: "", mediaSrc: "", mediaType: "" },
-      ]);
-      setCurrentSlide(slides.length + 1);
-    }
-  };
+  useEffect(() => {
+    if (storyId) {
+      const fetchStory = async () => {
+        try {
+          setLoading(true);
+          const res = await fetch(`${API_URL}/get-story`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: storyId }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            const initialSlides = data.story.slides || [];
+            setSlides(initialSlides.map((_, idx) => idx + 1)); // Update slide count
+            setSlideData(
+              initialSlides.map((slide) => ({
+                heading: slide.heading || "",
+                description: slide.description || "",
+                mediaSrc: slide.mediaSrc || "",
+                mediaType: slide.mediaType || "", // Ensure mediaType is included
+              }))
+            );
+            setCategory(data.story.category || "");
+          } else {
+            toast.error(data.message);
+          }
+        } catch (error) {
+          toast.error("Error fetching story.");
+        } finally {
+          setLoading(false);
+        }
+      };
 
-  const removeSlide = (slideNumber) => {
-    if (slides.length > 3) {
-      setSlides((prevSlides) =>
-        prevSlides.filter((_, index) => index !== slideNumber - 1)
+      fetchStory();
+    } else {
+      // Reset for new story creation
+      setSlideData(
+        Array.from({ length: 4 }, () => ({
+          heading: "",
+          description: "",
+          mediaSrc: "",
+          mediaType: "",
+        }))
       );
-
-      setSlideData((prevData) =>
-        prevData.filter((_, index) => index !== slideNumber - 1)
-      );
-
-      if (currentSlide === slideNumber) {
-        setCurrentSlide((prevSlide) => Math.max(1, prevSlide - 1));
-      }
     }
-  };
+  }, [storyId]);
 
   const detectMediaType = async (url) => {
     const videoExtensions = ["mp4", "webm", "ogg"];
@@ -80,99 +93,46 @@ export default function StoryCreator({ onClose }) {
       } else {
         return null;
       }
-    } catch (error) {
-      throw new Error("Invalid media URL or CORS issue");
+    } catch {
+      return null;
     }
   };
 
-  const checkMediaDuration = async (url) => {
-    return new Promise((resolve, reject) => {
-      detectMediaType(url)
-        .then((mediaType) => {
-          if (mediaType === "video") {
-            const media = document.createElement("video");
-            media.src = url;
+  const handleChange = async (e, slideIndex, field) => {
+    const value = e.target.value;
+    const updatedSlides = [...slideData];
 
-            media.onloadedmetadata = () => {
-              if (media.duration >= 20) {
-                reject("Video exceeds 15 seconds");
-              } else {
-                resolve("video");
-              }
-            };
+    updatedSlides[slideIndex][field] = value;
 
-            media.onerror = () => {
-              reject("Invalid video URL or CORS issue");
-            };
-          } else if (mediaType === "image") {
-            resolve("image");
-          } else {
-            reject("Unsupported media type");
-          }
-        })
-        .catch((error) => reject(error.message));
-    });
+    if (field === "mediaSrc") {
+      const mediaType = await detectMediaType(value);
+      updatedSlides[slideIndex].mediaType = mediaType;
+    }
+
+    setSlideData(updatedSlides);
   };
 
-  const handleChange = async (e, index, field) => {
-    const { value } = e.target;
-
-    setSlideData((prevData) => {
-      if (!prevData[index]) {
-        setCurrentSlide(1);
-        return prevData;
+  const validateSlides = () => {
+    const errors = [];
+    slideData.forEach((slide, index) => {
+      const slideErrors = [];
+      if (!slide.heading) slideErrors.push("heading");
+      if (!slide.description) slideErrors.push("description");
+      if (!slide.mediaSrc) slideErrors.push("mediaSrc");
+      if (!slide.mediaType) slideErrors.push("mediaType");
+      if (slideErrors.length) {
+        errors.push({ slideNumber: index + 1, errors: slideErrors });
       }
-
-      const newData = [...prevData];
-      newData[index][field] = value;
-
-      // Automatically detect and set media type if changing mediaSrc
-      if (field === "mediaSrc") {
-        checkMediaDuration(value)
-          .then((mediaType) => {
-            newData[index].mediaType = mediaType;
-            setSlideData(newData); // Update the state
-          })
-          .catch((error) => {
-            newData[index].mediaType = ""; // Reset if there's an error
-            toast.error(error); // Show the error message
-          });
-      }
-      return newData;
     });
+    return errors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!category) {
-      toast.error("Please select a category");
-      return;
-    }
-
-    if (!currentUser?.token) {
-      toast.error("You must be logged in to create a story");
-      return;
-    }
-
-    if (loading) return;
-    const relevantSlides = slideData.slice(0, slides.length);
-
-    // Validate slides
-    const missingFields = relevantSlides
-      .map((slide, index) => {
-        const slideNumber = index + 1;
-        const errors = [];
-        if (!slide.heading) errors.push("heading");
-        if (!slide.description) errors.push("description");
-        if (!slide.mediaSrc) errors.push("media");
-        if (!slide.mediaType) errors.push("valid media type");
-        return errors.length ? { slideNumber, errors } : null;
-      })
-      .filter(Boolean);
-
-    if (missingFields.length) {
-      const errorMessages = missingFields
+    const errors = validateSlides();
+    if (errors.length) {
+      const errorMessages = errors
         .map(
           ({ slideNumber, errors }) =>
             `Slide ${slideNumber} is missing the following fields: ${errors.join(
@@ -185,28 +145,34 @@ export default function StoryCreator({ onClose }) {
     }
 
     const dataToSend = {
-      slides: relevantSlides,
+      slides: slideData,
       category,
     };
 
     try {
       setLoading(true);
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${currentUser.token}`,
-        },
-        body: JSON.stringify(dataToSend),
-      });
+      const response = await fetch(
+        `${API_URL}/${storyId ? "update-story" : "create-story"}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${currentUser.token}`,
+          },
+          body: JSON.stringify({
+            ...(storyId && { id: storyId }), // Include storyId for update
+            ...dataToSend,
+          }),
+        }
+      );
 
       const result = await response.json();
 
       if (response.ok) {
-        toast.success("Story uploaded");
+        toast.success(storyId ? "Story updated" : "Story uploaded");
         onClose();
       } else {
-        toast.error("Something went wrong");
+        toast.error(result.message || "Something went wrong");
       }
     } catch (error) {
       toast.error("Error uploading story");
@@ -215,20 +181,36 @@ export default function StoryCreator({ onClose }) {
     }
   };
 
-  const handlePrevious = () => {
-    if (currentSlide > 1) setCurrentSlide(currentSlide - 1);
-  };
-  const handleNext = () => {
-    if (currentSlide < slides.length) setCurrentSlide(currentSlide + 1);
+  const addSlide = () => {
+    if (slides.length < 6) {
+      setSlides((prev) => [...prev, prev.length + 1]);
+      setSlideData((prev) => [
+        ...prev,
+        { heading: "", description: "", mediaSrc: "", mediaType: "" },
+      ]);
+    }
   };
 
-  console.log(slideData[currentSlide - 1].mediaType);
+  const removeSlide = (slideNumber) => {
+    if (slides.length > 3) {
+      setSlides((prev) => prev.filter((slide) => slide !== slideNumber));
+      setSlideData((prev) => prev.filter((_, idx) => idx !== slideNumber - 1));
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentSlide > 1) setCurrentSlide((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+    if (currentSlide < slides.length) setCurrentSlide((prev) => prev + 1);
+  };
 
   return (
     <div className="story-creator">
       <form className="modal" onSubmit={handleSubmit}>
         <button className="close-button" onClick={onClose} type="button">
-          <img src="/Vector.jpg" alt="x" />
+          <img src="/Vector.jpg" alt="Close" />
         </button>
         <p className="slide-limit">Add up to 6 slides</p>
         <div className="slide-tabs">
@@ -243,7 +225,7 @@ export default function StoryCreator({ onClose }) {
               {slide > 3 && (
                 <img
                   src="/Vector.jpg"
-                  alt="x"
+                  alt="Remove slide"
                   onClick={() => removeSlide(slide)}
                   className="slide-close-btn"
                 />
@@ -309,7 +291,13 @@ export default function StoryCreator({ onClose }) {
             </button>
           </div>
           <button className="post" type="submit" disabled={loading}>
-            {loading ? "Posting..." : "Post"}
+            {loading
+              ? storyId
+                ? "Editing..."
+                : "Posting..."
+              : storyId
+              ? "Edit"
+              : "Post"}
           </button>
         </div>
       </form>

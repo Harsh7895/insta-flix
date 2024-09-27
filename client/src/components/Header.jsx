@@ -11,6 +11,7 @@ import {
   signOutFailure,
 } from "../../redux/user/userSlice.js";
 import StoryCreator from "./StoryCreator.jsx";
+import { useNavigate } from "react-router-dom";
 
 const bgColors = [
   "#ef9a9a", // Light Red
@@ -47,7 +48,7 @@ const Header = () => {
   const [showHamburgerToggle, setShowHamburgerToggle] = useState(false);
   const [showCreateStoryForm, setShowCreateStoryForm] = useState(false);
   const dispatch = useDispatch();
-  console.log(showCreateStoryForm);
+  const navigate = useNavigate();
 
   const { currentUser, loading } = useSelector((state) => state.user);
 
@@ -106,7 +107,10 @@ const Header = () => {
           </>
         ) : (
           <>
-            <button className="bookmark-btn">
+            <button
+              className="bookmark-btn"
+              onClick={() => navigate("/bookmarks")}
+            >
               <IoBookmarkSharp size={15} />
               Bookmarks
             </button>
@@ -122,7 +126,7 @@ const Header = () => {
                 backgroundColor: randomColor,
               }}
             >
-              {currentUser.username.charAt(0).toUpperCase()}
+              {currentUser?.username?.charAt(0).toUpperCase()}
             </span>
 
             <GiHamburgerMenu

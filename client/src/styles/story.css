@@ -51,6 +51,7 @@
   border: none;
   color: #fff;
   font-size: 20px;
+  z-index: 10000;
   cursor: pointer;
 }
 

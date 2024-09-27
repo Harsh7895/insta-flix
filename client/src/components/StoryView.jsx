@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaBookmark, FaHeart } from "react-icons/fa";
 import { IoPaperPlaneOutline } from "react-icons/io5";
 import { toast } from "react-hot-toast";
@@ -12,7 +12,12 @@ const api_url = "http://localhost:3000/api/v1";
 {
   /* eslint-disable */
 }
-export default function StoryViewer({ storyId, slideId, onClose }) {
+export default function StoryViewer({
+  storyId,
+  slideId,
+  onClose,
+  showLoginPage,
+}) {
   const [loading, setLoading] = useState(false);
   const [story, setStory] = useState(null);
   const [slideLikes, setSlideLikes] = useState(0);
@@ -23,7 +28,9 @@ export default function StoryViewer({ storyId, slideId, onClose }) {
   const [isLiked, setIsLiked] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const videoRef = useRef(null);
 
+  console.log(currentUser);
   // Fetch story data when component mounts or params change
   useEffect(() => {
     document.body.classList.add("no-scroll");
@@ -60,35 +67,38 @@ export default function StoryViewer({ storyId, slideId, onClose }) {
 
   useEffect(() => {
     const checkBookMarked = () => {
-      // Reset bookmark status before checking
       setIsBookmarked(false);
 
-      // Check if currentUser, story, and current slide are available
       if (currentUser?.bookmarks && story?.slides?.[currentSlide]) {
-        const isCurrentSlideBookmarked = currentUser.bookmarks.some(
-          (bookmark) =>
-            bookmark.storyId === storyId &&
-            bookmark.slideId === story.slides[currentSlide]._id
+        const bookmarkStory = currentUser.bookmarks.find(
+          (bookmark) => bookmark.storyId === storyId
         );
 
-        // Set the bookmark status
-        setIsBookmarked(isCurrentSlideBookmarked);
+        if (bookmarkStory) {
+          const isCurrentSlideBookmarked = bookmarkStory.slides.includes(
+            story.slides[currentSlide]._id
+          );
+
+          setIsBookmarked(isCurrentSlideBookmarked);
+        }
       }
     };
+
     const checkLiked = () => {
-      // Reset bookmark status before checking
       setIsLiked(false);
 
-      // Check if currentUser, story, and current slide are available
       if (currentUser?.likes && story?.slides?.[currentSlide]) {
-        const isCurrentSlideLiked = currentUser.likes.some(
-          (like) =>
-            like.storyId === storyId &&
-            like.slideId === story.slides[currentSlide]._id
+        const likedStory = currentUser.likes.find(
+          (bookmark) => bookmark.storyId === storyId
         );
 
-        // Set the bookmark status
-        setIsLiked(isCurrentSlideLiked);
+        if (likedStory) {
+          const isCurrentLikedStory = likedStory.slides.includes(
+            story.slides[currentSlide]._id
+          );
+
+          setIsLiked(isCurrentLikedStory);
+        }
       }
     };
     const getLikesOnSlide = () => {
@@ -105,6 +115,15 @@ export default function StoryViewer({ storyId, slideId, onClose }) {
     checkBookMarked();
     checkLiked();
   }, [currentSlide, storyId, story]);
+
+  useEffect(() => {
+    // Reset the video when the slide changes
+    if (videoRef.current) {
+      videoRef.current.pause(); // Pause the video first
+      videoRef.current.currentTime = 0; // Reset playback time to the start
+      videoRef.current.play();
+    }
+  }, [currentSlide]);
 
   // Handle navigation between slides
   const handleNextSlide = () => {
@@ -134,6 +153,11 @@ export default function StoryViewer({ storyId, slideId, onClose }) {
   };
 
   const toggleBookMarkSlide = async (storyId, slideId) => {
+    if (!currentUser) {
+      onClose();
+      showLoginPage();
+      return;
+    }
     try {
       setBookmarkAndLikeLoading(true);
       const res = await fetch(`${api_url}/user/bookmark-toggle`, {
@@ -160,6 +184,11 @@ export default function StoryViewer({ storyId, slideId, onClose }) {
   };
 
   const toggleLikeSlide = async (storyId, slideId) => {
+    if (!currentUser) {
+      onClose();
+      showLoginPage();
+      return;
+    }
     try {
       const currentLikes = slideLikes;
       const currIsLiked = isLiked;
@@ -228,12 +257,22 @@ export default function StoryViewer({ storyId, slideId, onClose }) {
               <button className="share-btn" onClick={copyToClipboard}>
                 <IoPaperPlaneOutline size={20} />
               </button>
-              {story && (
+              {story && story.slides[currentSlide].mediaType === "image" && (
                 <img
                   src={story.slides[currentSlide].mediaSrc}
                   alt={story.slides[currentSlide].heading}
                   className="story-image"
                 />
+              )}
+              {story && story.slides[currentSlide].mediaType === "video" && (
+                <video
+                  src={story.slides[currentSlide].mediaSrc}
+                  className="story-image"
+                  controls={false}
+                  autoPlay
+                  loop
+                  ref={videoRef}
+                ></video>
               )}
               <div className="story-content">
                 <h2>{story?.slides[currentSlide].heading}</h2>

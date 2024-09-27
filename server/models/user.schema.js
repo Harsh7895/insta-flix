@@ -22,10 +22,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Story",
       },
-      slideId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Story",
-      },
+      slides: [{ type: mongoose.Schema.Types.ObjectId, ref: "Story" }],
     },
   ],
   likes: [
@@ -34,10 +31,7 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Story",
       },
-      slideId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Story",
-      },
+      slides: [{ type: mongoose.Schema.Types.ObjectId, ref: "Story" }],
     },
   ],
 });
