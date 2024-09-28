@@ -14,16 +14,16 @@ import StoryCreator from "./StoryCreator.jsx";
 import { useNavigate } from "react-router-dom";
 
 const bgColors = [
-  "#ef9a9a", // Light Red
-  "#90caf9", // Light Blue
-  "#a5d6a7", // Light Green
-  "#ffe082", // Light Yellow
-  "#ffccbc", // Light Orange
-  "#b39ddb", // Light Purple
-  "#ffab91", // Light Coral
-  "#80cbc4", // Light Teal
-  "#f48fb1", // Light Pink
-  "#e6ee9c", // Light Lime
+  "#ef9a9a",
+  "#90caf9",
+  "#a5d6a7",
+  "#ffe082",
+  "#ffccbc",
+  "#b39ddb",
+  "#ffab91",
+  "#80cbc4",
+  "#f48fb1",
+  "#e6ee9c",
 ];
 
 const Url = "http://localhost:3000/api/v1/auth";
@@ -31,13 +31,95 @@ const Url = "http://localhost:3000/api/v1/auth";
 {
   /* eslint-disable */
 }
-const HamburgerToggle = ({ name, handleLogout, loading }) => {
+const HamburgerToggle = ({
+  name,
+  handleLogout,
+  loading,
+  currentUser,
+  onClose,
+  randomColor,
+  openLogin,
+  openStoryCreator,
+  openForm,
+}) => {
+  const navigate = useNavigate();
   return (
     <div className="hamburger-toggle">
-      <p>{name}</p>
-      <button className="logout-btn" onClick={handleLogout} disabled={loading}>
-        Logout
-      </button>
+      <p>
+        <span
+          className="profile-btn btns"
+          style={{ backgroundColor: randomColor }}
+        >
+          {currentUser?.username?.charAt(0).toUpperCase()}
+        </span>
+        {currentUser ? name : "Guest"}
+      </p>
+      {!currentUser ? (
+        <>
+          <button
+            className="register-btn btns"
+            onClick={() => {
+              openLogin();
+              openForm("register");
+            }}
+            disabled={loading}
+          >
+            Register Now
+          </button>
+          <button
+            className="signin-btn btns"
+            onClick={() => {
+              openLogin();
+              openForm("login");
+            }}
+            disabled={loading}
+          >
+            Sign In
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            className="addStory-btn btns"
+            onClick={() => {
+              navigate("add-stories");
+              onClose();
+            }}
+          >
+            Your Stories
+          </button>
+          <button
+            className="addStory-btn btns"
+            onClick={() => {
+              openStoryCreator();
+              onClose();
+            }}
+          >
+            Add Story
+          </button>
+          <button
+            className="bookmark-btn btns"
+            onClick={() => {
+              navigate("/bookmarks");
+              onClose();
+            }}
+          >
+            <IoBookmarkSharp size={15} />
+            Bookmarks
+          </button>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+            disabled={loading}
+          >
+            Logout
+          </button>
+        </>
+      )}
+
+      <div className="close-hamburger" onClick={onClose}>
+        X
+      </div>
     </div>
   );
 };
@@ -66,7 +148,7 @@ const Header = () => {
       });
 
       const data = await res.json();
-      if (data.success === false) {
+      if (!data.success) {
         dispatch(signOutFailure(data.message));
         toast.error(data.message);
         return;
@@ -75,32 +157,42 @@ const Header = () => {
       setShowHamburgerToggle(false);
       toast.success("Logout successfully");
       dispatch(signOutSuccess());
+      navigate("/");
     } catch (error) {
       toast.error(error.message);
       dispatch(signOutFailure(error.message));
     }
   };
 
+  const openForm = (val) => {
+    setLoginOrRegister(val);
+    setShowHamburgerToggle(false);
+  };
+
   return (
     <>
-      <header>
+      <header className="header">
         {!currentUser ? (
           <>
             <button
-              className="register-btn"
+              className="register-btn btns"
               onClick={() => {
                 setShowLoginOrRegister(true);
                 setLoginOrRegister("register");
               }}
+              disabled={loading}
+              aria-label="Register Now"
             >
               Register Now
             </button>
             <button
-              className="signin-btn"
+              className="signin-btn btns"
               onClick={() => {
                 setShowLoginOrRegister(true);
                 setLoginOrRegister("login");
               }}
+              disabled={loading}
+              aria-label="Sign In"
             >
               Sign In
             </button>
@@ -108,23 +200,25 @@ const Header = () => {
         ) : (
           <>
             <button
-              className="bookmark-btn"
+              className="bookmark-btn btns"
               onClick={() => navigate("/bookmarks")}
+              disabled={loading}
+              aria-label="Bookmarks"
             >
               <IoBookmarkSharp size={15} />
               Bookmarks
             </button>
             <button
-              className="addStory-btn"
+              className="addStory-btn btns"
               onClick={() => setShowCreateStoryForm(true)}
+              disabled={loading}
+              aria-label="Add Story"
             >
               Add Story
             </button>
             <span
-              className="profile-btn"
-              style={{
-                backgroundColor: randomColor,
-              }}
+              className="profile-btn btns"
+              style={{ backgroundColor: randomColor }}
             >
               {currentUser?.username?.charAt(0).toUpperCase()}
             </span>
@@ -133,6 +227,7 @@ const Header = () => {
               size={22}
               className="hamburger"
               onClick={() => setShowHamburgerToggle(!showHamburgerToggle)}
+              aria-label="Menu"
             />
           </>
         )}
@@ -148,6 +243,12 @@ const Header = () => {
           name={currentUser?.username}
           handleLogout={handleLogout}
           loading={loading}
+          onClose={() => setShowHamburgerToggle(false)}
+          currentUser={currentUser}
+          randomColor={randomColor}
+          openLogin={() => setShowLoginOrRegister(true)}
+          openStoryCreator={() => setShowCreateStoryForm(true)}
+          openForm={openForm}
         />
       )}
       {showCreateStoryForm && (

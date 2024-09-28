@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useSelector } from "react-redux";
 import "../styles/storyCreator.css"; // Assuming your CSS is in this path
+import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:3000/api/v1/story";
 
@@ -19,6 +20,7 @@ export default function StoryCreator({ onClose, storyId = null }) {
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate("/");
 
   useEffect(() => {
     if (storyId) {
@@ -171,6 +173,7 @@ export default function StoryCreator({ onClose, storyId = null }) {
       if (response.ok) {
         toast.success(storyId ? "Story updated" : "Story uploaded");
         onClose();
+        navigate("/");
       } else {
         toast.error(result.message || "Something went wrong");
       }

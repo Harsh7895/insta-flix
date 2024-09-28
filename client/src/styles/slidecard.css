@@ -5,14 +5,17 @@
   width: 257px;
   height: 459px; /* Set a height to ensure proper layout */
   cursor: pointer;
+  box-shadow: inset 0 50px 30px -30px rgba(0, 0, 0, 0.7),
+    inset 0 -50px 30px -30px rgba(0, 0, 0, 0.7);
 }
 
 .story-card img,
 .story-card video {
-  /* This rule applies to both img and video */
   width: 100%;
   height: 100%;
   object-fit: cover; /* Ensures that the content covers the area */
+  z-index: 1;
+  position: relative;
 }
 
 .story-description {
@@ -28,14 +31,11 @@
 .story-description h3 {
   margin: 0;
   font-size: 18px;
-  box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
 }
 
 .story-description p {
   margin: 5px 0 0 0;
   font-size: 14px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset,
-    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
 
 .slides-number {

@@ -26,9 +26,11 @@ const storySchema = new mongoose.Schema({
       },
       mediaType: {
         type: String,
+        required: true,
       },
       likeCount: {
         type: Number,
+        default: 0,
       },
     },
   ],

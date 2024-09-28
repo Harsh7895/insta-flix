@@ -73,6 +73,7 @@ export const toggleLikeStory = async (req, res, next) => {
   const { storyId, slideId } = req.body;
 
   try {
+    console.log("hello");
     const { id } = req.user; // Get the user ID from the authenticated user
 
     const story = await Story.findById(storyId);

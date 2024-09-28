@@ -66,7 +66,7 @@ header {
 }
 
 .hamburger {
-  margin-right: 30px;
+  margin-right: 10px;
   cursor: pointer;
 }
 
@@ -74,6 +74,7 @@ header {
   width: 250px;
   height: 150px;
   position: absolute;
+  padding: 20px;
   top: 10%;
   right: 2px;
   display: flex;
@@ -88,16 +89,59 @@ header {
     margin: 30px 0;
     font-size: 18px;
     font-weight: 700;
+
+    > .btns {
+      display: none;
+    }
+  }
+
+  > .btns {
+    display: none;
+  }
+
+  .close-hamburger {
+    position: absolute;
+    top: 5%;
+    right: 30px;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 900;
   }
 }
 
-@media (max-width: 780px) {
-  .addStory-btn,
-  .bookmark-btn,
-  .profile-btn {
-    display: none;
+@media (max-width: 580px) {
+  .header {
+    > .btns {
+      display: none;
+    }
   }
-  .hamburger {
-    margin: 0;
+  .hamburger-toggle {
+    width: 100vw;
+    height: auto;
+    top: 7%;
+    > p {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+
+      > .btns {
+        display: flex;
+      }
+    }
+    > .btns {
+      display: block;
+      margin: 10px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 200px;
+    }
+
+    > .logout-btn {
+      width: 200px;
+      margin: 10px 0;
+    }
   }
 }

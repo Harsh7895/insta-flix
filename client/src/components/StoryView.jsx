@@ -26,6 +26,7 @@ export default function StoryViewer({
   const [bookmarkAndLikeLoading, setBookmarkAndLikeLoading] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [isShared, setIsShared] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const videoRef = useRef(null);
@@ -206,6 +207,7 @@ export default function StoryViewer({
 
       const data = await res.json();
       if (data.success === false) {
+        console.log(data);
         toast.error(data.message);
         setSlideLikes(currentLikes);
         setIsLiked(currIsLiked);
@@ -215,6 +217,7 @@ export default function StoryViewer({
 
       dispatch(signInSuccess({ token: currentUser.token, ...data.rest }));
     } catch (error) {
+      console.log(error);
       toast.error(error.message);
     } finally {
       setBookmarkAndLikeLoading(false);
@@ -227,7 +230,10 @@ export default function StoryViewer({
       // Generate a shareable URL with the current story and slide
       const sharedLink = `${window.location.origin}?storyId=${storyId}&slideId=${story.slides[currentSlide]._id}`;
       await navigator.clipboard.writeText(sharedLink);
-      toast.success("Link copied to clipboard");
+      setIsShared(true);
+      setTimeout(() => {
+        setIsShared(false);
+      }, 2300);
     } catch (err) {
       toast.error("Failed to copy link.");
     }
@@ -275,6 +281,7 @@ export default function StoryViewer({
                 ></video>
               )}
               <div className="story-content">
+                {isShared && <p id="copiedLink">Link Copied to Clipboard</p>}
                 <h2>{story?.slides[currentSlide].heading}</h2>
                 <p>{story?.slides[currentSlide].description}</p>
               </div>

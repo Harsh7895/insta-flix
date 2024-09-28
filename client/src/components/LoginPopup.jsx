@@ -7,6 +7,7 @@ import {
   signInSuccess,
 } from "../../redux/user/userSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Url = "http://localhost:3000/api/v1/auth";
 
@@ -20,6 +21,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.classList.add("no-scroll");
@@ -71,6 +73,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
       setPassword("");
       onClose();
       setError("");
+      navigate("/");
     } catch (error) {
       setError(error.message);
       if (loginOrRegister === "login")

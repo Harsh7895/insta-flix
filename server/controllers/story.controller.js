@@ -126,3 +126,44 @@ export const getAllBookmarkedStories = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getCategoryStories = async (req, res) => {
+  let { category } = req.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 4;
+
+  try {
+    const stories = await Story.find({
+      category: new RegExp(`^${category}$`, "i"), // Case-insensitive category match
+    })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate("createdBy", "username")
+      .sort({ createdAt: -1, _id: -1 }); // Sort by createdAt and _id to ensure uniqueness
+
+    const totalStories = await Story.countDocuments({ category });
+
+    if (stories.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No stories available in this category",
+        stories: [],
+        totalStories: 0,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      stories,
+      totalStories,
+      currentPage: page,
+      totalPages: Math.ceil(totalStories / limit),
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching stories",
+    });
+  }
+};

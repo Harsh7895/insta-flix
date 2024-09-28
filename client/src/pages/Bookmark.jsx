@@ -9,6 +9,9 @@ import LoginPopup from "../components/LoginPopup";
 
 const api_url = "http://localhost:3000/api/v1/story/get-allbookmarked-stories";
 
+{
+  /* eslint-disable */
+}
 const Bookmark = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [bookmarks, setBookmarks] = useState(null);
@@ -17,11 +20,13 @@ const Bookmark = () => {
   const [selectedSlide, setSelectedSlide] = useState(null);
   const [isStoryViewerOpen, setStoryViewerOpen] = useState(false);
   const [showLoginIfNot, setShowLoginIfNot] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const getBookmarks = async () => {
       try {
+        setLoading(true);
         const res = await fetch(api_url, {
           method: "GET",
           headers: {
@@ -40,6 +45,8 @@ const Bookmark = () => {
       } catch (error) {
         console.log(error);
         toast.error("Error fetching bookmarks.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -84,8 +91,14 @@ const Bookmark = () => {
         </div>
         {(!bookmarks || bookmarks.length < 1) && (
           <p>
-            No Bookmarks found.{" "}
-            <span onClick={() => navigate("/")}>Back to Home</span>
+            {loading ? (
+              "Loading...."
+            ) : (
+              <>
+                No Bookmarks found.{" "}
+                <span onClick={() => navigate("/")}>Back to Home</span>
+              </>
+            )}
           </p>
         )}
       </div>

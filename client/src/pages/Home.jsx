@@ -3,11 +3,10 @@ import "../styles/home.css";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import SlideCard from "../components/SlideCard";
-import StoryViewer from "../components/StoryView.jsx"; // Import StoryViewer
-import { useSearchParams } from "react-router-dom"; // Import React Router hooks
+import StoryViewer from "../components/StoryView.jsx";
 import LoginPopup from "../components/LoginPopup.jsx";
 
-const api_url = "http://localhost:3000/api/v1/story/get-user-story";
+const api_url = "http://localhost:3000/api/v1/story";
 
 const categories = [
   {
@@ -37,85 +36,123 @@ const categories = [
   },
 ];
 
+{
+  /* eslint-disable */
+}
+
 const Home = () => {
-  const [active, setActive] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [yourStory, setYourStory] = useState(null);
-  const [selectedStory, setSelectedStory] = useState(null); // New state for the selected story
-  const [selectedSlide, setSelectedSlide] = useState(null); // New state for the selected slide
-  const [isStoryViewerOpen, setStoryViewerOpen] = useState(false); // State to control StoryViewer modal visibility
+  const [storiesByCategory, setStoriesByCategory] = useState({});
+  const [pageByCategory, setPageByCategory] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [active, setActive] = useState([]); // State for active categories
+  const [selectedStory, setSelectedStory] = useState(null);
+  const [selectedSlide, setSelectedSlide] = useState(null);
+  const [isStoryViewerOpen, setStoryViewerOpen] = useState(false);
   const [showLoginIfNot, setShowLoginIfNot] = useState(false);
 
   const { currentUser } = useSelector((state) => state.user);
 
-  const [searchParams, setSearchParams] = useSearchParams(); // React Router hook for search params
-
-  const handleSelect = (item) => {
-    if (active.includes(item)) {
-      setActive(active.filter((category) => category !== item));
+  const handleSelect = (category) => {
+    if (active.includes(category)) {
+      setActive(active.filter((cat) => cat !== category));
     } else {
-      setActive([...active, item]);
+      setActive([...active, category]);
     }
   };
 
-  useEffect(() => {
+  const fetchYourStories = async () => {
     if (currentUser) {
-      const getStory = async () => {
-        try {
-          setLoading(true);
-          const res = await fetch(api_url, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${currentUser.token}`,
-            },
-          });
-          const data = await res.json();
-          if (!data.success) {
-            toast.error(data.message);
-          } else {
-            setYourStory(data.stories);
-          }
-        } catch (error) {
-          console.log(error);
-          toast.error("Error fetching story.");
-        } finally {
-          setLoading(false);
+      try {
+        setLoading(true);
+        const res = await fetch(`${api_url}/get-user-story`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${currentUser.token}`,
+          },
+        });
+        const data = await res.json();
+        if (!data.success) {
+          toast.error(data.message);
+        } else {
+          setYourStory(data.stories);
         }
-      };
-
-      getStory();
+      } catch (error) {
+        console.log(error);
+        toast.error("Error fetching your stories.");
+      } finally {
+        setLoading(false);
+      }
     }
+  };
 
-    if (!currentUser) setYourStory(null);
-  }, [currentUser]);
+  const fetchCategoryStories = async (category, page = 1) => {
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `${api_url}/get-storyby-category?category=${category}&limit=4&page=${page}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const data = await res.json();
+      if (!data.success) {
+        toast.error(data.message);
+      } else {
+        setStoriesByCategory((prevStories) => {
+          const currentStories = prevStories[category] || [];
 
-  // Function to open the story viewer modal
+          const uniqueNewStories = data.stories.filter(
+            (newStory) =>
+              !currentStories.some((story) => story._id === newStory._id)
+          );
+
+          return {
+            ...prevStories,
+            [category]: [...currentStories, ...uniqueNewStories],
+          };
+        });
+
+        setPageByCategory((prevPage) => ({
+          ...prevPage,
+          [category]: page,
+        }));
+      }
+    } catch (error) {
+      toast.error("Error fetching stories for category.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMoreStories = (category) => {
+    const nextPage = (pageByCategory[category] || 1) + 1;
+
+    fetchCategoryStories(category, nextPage);
+  };
+
   const openStoryViewer = (storyId, slideId) => {
     setSelectedStory(storyId);
     setSelectedSlide(slideId);
     setStoryViewerOpen(true);
-
-    // Update the URL with query parameters using React Router's setSearchParams
-    setSearchParams({ storyId, slideId });
   };
 
   const closeStoryViewer = () => {
     setStoryViewerOpen(false);
-
-    // Clear query parameters when closing the StoryViewer
-    setSearchParams({});
   };
 
-  // Read query parameters on page load
-  useEffect(() => {
-    const storyIdFromUrl = searchParams.get("storyId");
-    const slideIdFromUrl = searchParams.get("slideId");
+  const fetchInitialStories = () => {
+    categories.forEach((category) => fetchCategoryStories(category.name, 1));
+  };
 
-    if (storyIdFromUrl && slideIdFromUrl) {
-      openStoryViewer(storyIdFromUrl, slideIdFromUrl);
+  useEffect(() => {
+    if (currentUser) {
+      fetchYourStories();
     }
-  }, [searchParams]);
+    fetchInitialStories();
+  }, []);
 
   return (
     <div className="app">
@@ -133,10 +170,11 @@ const Home = () => {
         ))}
       </div>
 
-      {yourStory && (
+      {/* Your Stories Section */}
+      {currentUser && yourStory && yourStory.length > 0 && (
         <>
-          <h2>Your Stories</h2>
-          <div className="stories-grid">
+          <h2 className="your-stories">Your Stories</h2>
+          <div className="stories-grid your-stories">
             {yourStory.map((story, indx) => (
               <SlideCard
                 key={indx}
@@ -147,46 +185,59 @@ const Home = () => {
                 storyId={story._id}
                 slideId={story.slides[0]._id}
                 onOpenStoryViewer={openStoryViewer}
-                showEdit={true}
               />
             ))}
           </div>
         </>
       )}
-      <h2>Top Stories About food</h2>
-      <div className="stories-grid">
-        <div className="no-stories">No Stories Available</div>
-      </div>
 
-      <button className="see-more-btn">See more</button>
+      {/* Stories by Category */}
+      {categories.map((category) => (
+        <div key={category.id}>
+          <h2>Top Stories About {category.name}</h2>
+          <div className="stories-grid">
+            {/* Check if stories are available for the category */}
+            {storiesByCategory[category.name] &&
+            storiesByCategory[category.name].length > 0 ? (
+              storiesByCategory[category.name].map((story, indx) => (
+                <SlideCard
+                  key={indx}
+                  mediaSrc={story.slides[0].mediaSrc}
+                  mediaType={story.slides[0].mediaType}
+                  description={story.slides[0].description}
+                  heading={story.slides[0].heading}
+                  storyId={story._id}
+                  slideId={story.slides[0]._id}
+                  onOpenStoryViewer={openStoryViewer}
+                />
+              ))
+            ) : (
+              <div className="no-stories">No Stories Available</div>
+            )}
+          </div>
+          {storiesByCategory[category.name] &&
+            storiesByCategory[category.name].length > 0 && (
+              <button
+                className="see-more-btn"
+                onClick={() => loadMoreStories(category.name)}
+              >
+                See more
+              </button>
+            )}
+        </div>
+      ))}
 
-      <h2>Top Stories About food</h2>
-      <div className="stories-grid">
-        {[1, 2, 3, 4].map((item) => (
-          <SlideCard
-            key={item}
-            heading={"Heading comes here"}
-            description={
-              "Inspirational designs, illustrations, and graphic elements from the world's best designers"
-            }
-            mediaSrc={
-              "https://th.bing.com/th?id=OIP.Fw-199hoU0qcuFHEL9Vf8wHaLH&w=204&h=306&c=8&rs=1&qlt=90&o=6&pid=3.1&rm=2"
-            }
-            mediaType={"image"}
-          />
-        ))}
-      </div>
-
-      {/* Add the StoryViewer as an overlay */}
+      {/* Story Viewer Modal */}
       {isStoryViewerOpen && (
         <StoryViewer
           storyId={selectedStory}
           slideId={selectedSlide}
-          onClose={closeStoryViewer} // Close the viewer
+          onClose={closeStoryViewer}
           showLoginPage={() => setShowLoginIfNot(true)}
         />
       )}
 
+      {/* Login Popup */}
       {showLoginIfNot && (
         <LoginPopup
           onClose={() => setShowLoginIfNot(false)}

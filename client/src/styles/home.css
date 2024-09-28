@@ -99,3 +99,9 @@ h2 {
 #active-category {
   border: 4px solid #00acd2;
 }
+
+@media (max-width: 580px) {
+  .app > .your-stories {
+    display: none;
+  }
+}
