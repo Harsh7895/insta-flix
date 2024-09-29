@@ -26,7 +26,7 @@ const bgColors = [
   "#e6ee9c",
 ];
 
-const Url = "http://localhost:3000/api/v1/auth";
+const Url = "https://insta-flix-api.vercel.app/api/v1/auth";
 
 {
   /* eslint-disable */

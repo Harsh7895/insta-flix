@@ -6,7 +6,7 @@ import StoryViewer from "../components/StoryView";
 import LoginPopup from "../components/LoginPopup";
 import "../styles/bookmark.css";
 
-const api_url = "http://localhost:3000/api/v1/story";
+const api_url = "https://insta-flix-api.vercel.app/api/v1/story";
 
 const YourStories = () => {
   const [yourStories, setYourStories] = useState([]);

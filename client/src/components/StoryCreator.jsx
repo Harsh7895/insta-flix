@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import "../styles/storyCreator.css"; // Assuming your CSS is in this path
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:3000/api/v1/story";
+const API_URL = "https://insta-flix-api.vercel.app/api/v1/story";
 
 {
   /* eslint-disable */

@@ -7,7 +7,7 @@ import "../styles/story.css";
 import { useDispatch, useSelector } from "react-redux";
 import { signInSuccess } from "../../redux/user/userSlice";
 
-const api_url = "http://localhost:3000/api/v1";
+const api_url = "https://insta-flix-api.vercel.app/api/v1";
 
 {
   /* eslint-disable */

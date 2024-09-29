@@ -7,7 +7,7 @@ import StoryViewer from "../components/StoryView.jsx";
 import LoginPopup from "../components/LoginPopup.jsx";
 import { useSearchParams } from "react-router-dom";
 
-const api_url = "http://localhost:3000/api/v1/story";
+const api_url = "https://insta-flix-api.vercel.app/api/v1/story";
 
 const categories = [
   {

@@ -7,7 +7,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import StoryViewer from "../components/StoryView";
 import LoginPopup from "../components/LoginPopup";
 
-const api_url = "http://localhost:3000/api/v1/story/get-allbookmarked-stories";
+const api_url =
+  "https://insta-flix-api.vercel.app/api/v1/story/get-allbookmarked-stories";
 
 {
   /* eslint-disable */
