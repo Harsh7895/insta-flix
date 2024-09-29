@@ -35,6 +35,10 @@ export default function StoryViewer({
   // Fetch story data when component mounts or params change
   useEffect(() => {
     document.body.classList.add("no-scroll");
+    setSearchParams({
+      storyId,
+      slideId,
+    });
     const getStory = async () => {
       try {
         setLoading(true);
@@ -118,13 +122,22 @@ export default function StoryViewer({
   }, [currentSlide, storyId, story]);
 
   useEffect(() => {
-    // Reset the video when the slide changes
     if (videoRef.current) {
-      videoRef.current.pause(); // Pause the video first
-      videoRef.current.currentTime = 0; // Reset playback time to the start
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
       videoRef.current.play();
     }
   }, [currentSlide]);
+
+  useEffect(() => {
+    if (videoRef.current && story) {
+      if (story.slides[currentSlide].mediaType === "video") {
+        videoRef.current.play().catch((error) => {
+          console.log("Video play failed: ", error); // Log for debugging
+        });
+      }
+    }
+  }, [currentSlide, story]);
 
   // Handle navigation between slides
   const handleNextSlide = () => {
@@ -157,6 +170,7 @@ export default function StoryViewer({
     if (!currentUser) {
       onClose();
       showLoginPage();
+      setSearchParams({});
       return;
     }
     try {
@@ -188,6 +202,7 @@ export default function StoryViewer({
     if (!currentUser) {
       onClose();
       showLoginPage();
+      setSearchParams({});
       return;
     }
     try {
@@ -257,7 +272,13 @@ export default function StoryViewer({
                   />
                 ))}
               </div>
-              <button className="close-btn" onClick={onClose}>
+              <button
+                className="close-btn"
+                onClick={() => {
+                  onClose();
+                  setSearchParams();
+                }}
+              >
                 ✕
               </button>
               <button className="share-btn" onClick={copyToClipboard}>
@@ -277,6 +298,7 @@ export default function StoryViewer({
                   controls={false}
                   autoPlay
                   loop
+                  muted
                   ref={videoRef}
                 ></video>
               )}

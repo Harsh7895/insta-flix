@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import SlideCard from "../components/SlideCard";
 import StoryViewer from "../components/StoryView.jsx";
 import LoginPopup from "../components/LoginPopup.jsx";
+import { useSearchParams } from "react-router-dom";
 
 const api_url = "http://localhost:3000/api/v1/story";
 
@@ -49,6 +50,7 @@ const Home = () => {
   const [selectedStory, setSelectedStory] = useState(null);
   const [selectedSlide, setSelectedSlide] = useState(null);
   const [isStoryViewerOpen, setStoryViewerOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showLoginIfNot, setShowLoginIfNot] = useState(false);
 
   const { currentUser } = useSelector((state) => state.user);
@@ -139,6 +141,17 @@ const Home = () => {
     setStoryViewerOpen(true);
   };
 
+  useEffect(() => {
+    const storyId = searchParams.get("storyId");
+    const slideId = searchParams.get("slideId");
+
+    if (storyId && slideId) {
+      setSelectedStory(storyId);
+      setSelectedSlide(slideId);
+      setStoryViewerOpen(true);
+    }
+  }, []);
+
   const closeStoryViewer = () => {
     setStoryViewerOpen(false);
   };
@@ -165,7 +178,7 @@ const Home = () => {
             id={active.includes(category.name) ? "active-category" : ""}
           >
             <img src={category.imgSrc} alt={category.name} />
-            <span>{category.name}</span>
+            <p>{category.name}</p>
           </div>
         ))}
       </div>

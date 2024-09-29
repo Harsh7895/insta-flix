@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 
 const API_URL = "http://localhost:3000/api/v1/story";
 
+{
+  /* eslint-disable */
+}
 export default function StoryCreator({ onClose, storyId = null }) {
   const [currentSlide, setCurrentSlide] = useState(1);
   const [slides, setSlides] = useState([1, 2, 3, 4]);
@@ -21,6 +24,11 @@ export default function StoryCreator({ onClose, storyId = null }) {
   const [loading, setLoading] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate("/");
+
+  useEffect(() => {
+    document.body.classList.add("no-scroll");
+    return () => document.body.classList.remove("no-scroll");
+  }, []);
 
   useEffect(() => {
     if (storyId) {

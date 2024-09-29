@@ -45,15 +45,17 @@ const HamburgerToggle = ({
   const navigate = useNavigate();
   return (
     <div className="hamburger-toggle">
-      <p>
-        <span
-          className="profile-btn btns"
-          style={{ backgroundColor: randomColor }}
-        >
-          {currentUser?.username?.charAt(0).toUpperCase()}
-        </span>
-        {currentUser ? name : "Guest"}
-      </p>
+      {currentUser && (
+        <p>
+          <span
+            className="profile-btn btns"
+            style={{ backgroundColor: randomColor }}
+          >
+            {currentUser?.username?.charAt(0).toUpperCase()}
+          </span>
+          {currentUser ? name : "Guest"}
+        </p>
+      )}
       {!currentUser ? (
         <>
           <button
@@ -82,7 +84,7 @@ const HamburgerToggle = ({
           <button
             className="addStory-btn btns"
             onClick={() => {
-              navigate("add-stories");
+              navigate("your-stories");
               onClose();
             }}
           >
@@ -196,6 +198,13 @@ const Header = () => {
             >
               Sign In
             </button>
+            <GiHamburgerMenu
+              size={22}
+              className="hamburger"
+              onClick={() => setShowHamburgerToggle(!showHamburgerToggle)}
+              aria-label="Menu"
+              id="hamburger-not-loggedIn"
+            />
           </>
         ) : (
           <>

@@ -45,7 +45,7 @@
   object-fit: cover;
 }
 
-.category-item span {
+.category-item p {
   color: white;
   position: absolute;
   z-index: 100;
@@ -101,7 +101,27 @@ h2 {
 }
 
 @media (max-width: 580px) {
-  .app > .your-stories {
-    display: none;
+  .app {
+    .category-item {
+      width: 142.6px;
+      height: 95.15px;
+      border-radius: 20px;
+      position: relative;
+      > p {
+        position: absolute;
+        height: 95.15px;
+        width: 142.6px;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+      }
+    }
+
+    > .your-stories {
+      display: none;
+    }
   }
 }

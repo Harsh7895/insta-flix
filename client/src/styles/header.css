@@ -108,6 +108,9 @@ header {
     font-weight: 900;
   }
 }
+#hamburger-not-loggedIn {
+  display: none;
+}
 
 @media (max-width: 580px) {
   .header {
@@ -143,5 +146,9 @@ header {
       width: 200px;
       margin: 10px 0;
     }
+  }
+
+  #hamburger-not-loggedIn {
+    display: block;
   }
 }
