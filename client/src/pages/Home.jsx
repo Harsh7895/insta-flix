@@ -295,7 +295,7 @@ const Home = () => {
       {/* Story Viewer */}
       {isStoryViewerOpen && (
         <StoryViewer
-          closeViewer={closeStoryViewer}
+          onClose={closeStoryViewer}
           storyId={selectedStory}
           slideId={selectedSlide}
         />
