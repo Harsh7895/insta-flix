@@ -220,77 +220,86 @@ export default function StoryCreator({ onClose, storyId = null }) {
   return (
     <div className="story-creator">
       <form className="modal" onSubmit={handleSubmit}>
+        <h2 className="add-story-heading">Add story to feed</h2>
         <button className="close-button" onClick={onClose} type="button">
           <img src="/Vector.jpg" alt="Close" />
         </button>
         <p className="slide-limit">Add up to 6 slides</p>
-        <div className="slide-tabs">
-          {slides.map((slide) => (
-            <button
-              key={slide}
-              className={`slide-tab ${currentSlide === slide ? "active" : ""}`}
-              onClick={() => setCurrentSlide(slide)}
-              type="button"
-            >
-              Slide {slide}
-              {slide > 3 && (
-                <img
-                  src="/Vector.jpg"
-                  alt="Remove slide"
-                  onClick={() => removeSlide(slide)}
-                  className="slide-close-btn"
-                />
-              )}
-            </button>
-          ))}
-          {slides.length < 6 && (
-            <button className="add-slide" onClick={addSlide} type="button">
-              Add +
-            </button>
-          )}
-        </div>
-        <div className="form-group">
-          <label htmlFor="heading">Heading :</label>
-          <input
-            type="text"
-            id="heading"
-            placeholder="Your heading"
-            value={slideData[currentSlide - 1]?.heading || ""}
-            onChange={(e) => handleChange(e, currentSlide - 1, "heading")}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="description">Description :</label>
-          <textarea
-            id="description"
-            placeholder="Story Description"
-            value={slideData[currentSlide - 1]?.description || ""}
-            onChange={(e) => handleChange(e, currentSlide - 1, "description")}
-          ></textarea>
-        </div>
-        <div className="form-group">
-          <label htmlFor="mediaSrc">Media :</label>
-          <input
-            type="text"
-            id="mediaSrc"
-            placeholder="Add image/video URL"
-            value={slideData[currentSlide - 1]?.mediaSrc || ""}
-            onChange={(e) => handleChange(e, currentSlide - 1, "mediaSrc")}
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="category">Category :</label>
-          <select
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Select category</option>
-            <option value="medical">Medical</option>
-            <option value="fruits">Fruits</option>
-            <option value="world">World</option>
-            <option value="india">India</option>
-          </select>
+        <div className="slide-form-container">
+          <div className="slide-tabs">
+            {slides.map((slide) => (
+              <button
+                key={slide}
+                className={`slide-tab ${
+                  currentSlide === slide ? "active" : ""
+                }`}
+                onClick={() => setCurrentSlide(slide)}
+                type="button"
+              >
+                Slide {slide}
+                {slide > 3 && (
+                  <img
+                    src="/Vector.jpg"
+                    alt="Remove slide"
+                    onClick={() => removeSlide(slide)}
+                    className="slide-close-btn"
+                  />
+                )}
+              </button>
+            ))}
+            {slides.length < 6 && (
+              <button className="add-slide" onClick={addSlide} type="button">
+                Add +
+              </button>
+            )}
+          </div>
+          <div className="form-groups-container">
+            <div className="form-group">
+              <label htmlFor="heading">Heading :</label>
+              <input
+                type="text"
+                id="heading"
+                placeholder="Your heading"
+                value={slideData[currentSlide - 1]?.heading || ""}
+                onChange={(e) => handleChange(e, currentSlide - 1, "heading")}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="description">Description :</label>
+              <textarea
+                id="description"
+                placeholder="Story Description"
+                value={slideData[currentSlide - 1]?.description || ""}
+                onChange={(e) =>
+                  handleChange(e, currentSlide - 1, "description")
+                }
+              ></textarea>
+            </div>
+            <div className="form-group">
+              <label htmlFor="mediaSrc">Media :</label>
+              <input
+                type="text"
+                id="mediaSrc"
+                placeholder="Add image/video URL"
+                value={slideData[currentSlide - 1]?.mediaSrc || ""}
+                onChange={(e) => handleChange(e, currentSlide - 1, "mediaSrc")}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="category">Category :</label>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="">Select category</option>
+                <option value="medical">Medical</option>
+                <option value="fruits">Fruits</option>
+                <option value="world">World</option>
+                <option value="india">India</option>
+              </select>
+            </div>
+          </div>
         </div>
         <div className="button-group">
           <div>

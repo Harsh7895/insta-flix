@@ -95,7 +95,7 @@
 }
 
 label {
-  flex: 1; /* Allows label to take up only as much space as needed */
+  flex: 1;
   margin-bottom: 0; /* Remove bottom margin for alignment */
   font-weight: bold;
   color: #333; /* Adjust color for better visibility */
@@ -126,6 +126,9 @@ textarea {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+  flex-wrap: nowrap;
+  flex-shrink: 1;
+  flex-direction: row;
 }
 
 .previous,
@@ -139,6 +142,7 @@ textarea {
   font-size: 14px;
   font-weight: bold;
   text-transform: uppercase;
+  flex-shrink: 1;
 }
 
 .previous {
@@ -160,21 +164,105 @@ textarea {
   opacity: 0.9;
 }
 
+.add-story-heading {
+  display: none;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .modal {
     width: 95%;
     padding: 15px;
   }
+}
 
-  .button-group {
+@media (max-width: 580px) {
+  .previous,
+  .next {
+    display: none;
+  }
+  .slide-form-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 0;
+  }
+  .slide-limit {
+    display: none;
+  }
+  .slide-tabs {
+    display: flex;
     flex-direction: column;
-    gap: 10px;
+    flex-shrink: 1;
+  }
+  .slide-tab {
+    margin-bottom: 10px;
+    flex-shrink: 1;
+    white-space: wrap;
+    width: 45.06px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 38px;
+    padding: 10px;
+    font-size: 12px;
+  }
+  .add-slide {
+    margin-bottom: 10px;
+    flex-shrink: 1;
+    white-space: wrap;
+    width: 45.06px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 38px;
+    padding: 10px;
+    font-size: 12px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: start;
+    gap: 2px;
+  }
+  .form-groups-container {
+    flex: 1;
+    width: 100%;
+  }
+  #heading {
+    width: 80%;
+  }
+  input[type="text"],
+  textarea {
+    width: 80%;
+    margin-top: 0;
+  }
+  select {
+    width: 85%;
   }
 
-  .previous,
-  .next,
   .post {
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto;
+    margin-top: 0;
+  }
+
+  .button-group {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .add-story-heading {
+    text-align: center;
     width: 100%;
+    display: block;
+    margin-bottom: 30px;
+  }
+  .slide-close-btn {
+    top: -2px;
+    right: -2px;
   }
 }

@@ -11,11 +11,6 @@ const api_url = "https://insta-flix-api.vercel.app/api/v1/story";
 
 const categories = [
   {
-    id: 1,
-    imgSrc: "/all.png",
-    name: "All",
-  },
-  {
     id: 2,
     imgSrc: "/medicine.png",
     name: "Medical",
@@ -37,16 +32,20 @@ const categories = [
   },
 ];
 
-{
-  /* eslint-disable */
-}
+const allCategory = {
+  id: 1,
+  imgSrc: "/all.png",
+  name: "All",
+};
 
 const Home = () => {
   const [yourStory, setYourStory] = useState(null);
   const [storiesByCategory, setStoriesByCategory] = useState({});
   const [pageByCategory, setPageByCategory] = useState({});
   const [loading, setLoading] = useState(false);
-  const [active, setActive] = useState([]); // State for active categories
+  const [selectedCategories, setSelectedCategories] = useState([
+    allCategory.name,
+  ]); // Start with "All" selected
   const [selectedStory, setSelectedStory] = useState(null);
   const [selectedSlide, setSelectedSlide] = useState(null);
   const [isStoryViewerOpen, setStoryViewerOpen] = useState(false);
@@ -55,11 +54,23 @@ const Home = () => {
 
   const { currentUser } = useSelector((state) => state.user);
 
+  // Handle category selection
   const handleSelect = (category) => {
-    if (active.includes(category)) {
-      setActive(active.filter((cat) => cat !== category));
+    if (category === "All") {
+      setSelectedCategories([category]); // Clear other selections and show all
     } else {
-      setActive([...active, category]);
+      setSelectedCategories((prev) => {
+        if (prev.includes("All")) {
+          return [category]; // Remove "All" when selecting a specific category
+        }
+        if (prev.includes(category)) {
+          return prev.filter((cat) => cat !== category); // Deselect category
+        }
+        if (prev.length < 4) {
+          return [...prev, category]; // Add new category up to a max of 4
+        }
+        return prev; // Ignore if more than 4 categories are selected
+      });
     }
   };
 
@@ -131,7 +142,6 @@ const Home = () => {
 
   const loadMoreStories = (category) => {
     const nextPage = (pageByCategory[category] || 1) + 1;
-
     fetchCategoryStories(category, nextPage);
   };
 
@@ -170,12 +180,16 @@ const Home = () => {
   return (
     <div className="app">
       <div className="categories">
-        {categories.map((category) => (
+        {[allCategory, ...categories].map((category) => (
           <div
             className="category-item"
             key={category.id}
             onClick={() => handleSelect(category.name)}
-            id={active.includes(category.name) ? "active-category" : ""}
+            id={
+              selectedCategories.includes(category.name)
+                ? "active-category"
+                : ""
+            }
           >
             <img src={category.imgSrc} alt={category.name} />
             <p>{category.name}</p>
@@ -198,64 +212,97 @@ const Home = () => {
                 storyId={story._id}
                 slideId={story.slides[0]._id}
                 onOpenStoryViewer={openStoryViewer}
+                showEdit={true}
               />
             ))}
           </div>
         </>
       )}
 
-      {/* Stories by Category */}
-      {categories.map((category) => (
-        <div key={category.id}>
-          <h2>Top Stories About {category.name}</h2>
-          <div className="stories-grid">
-            {/* Check if stories are available for the category */}
-            {storiesByCategory[category.name] &&
-            storiesByCategory[category.name].length > 0 ? (
-              storiesByCategory[category.name].map((story, indx) => (
-                <SlideCard
-                  key={indx}
-                  mediaSrc={story.slides[0].mediaSrc}
-                  mediaType={story.slides[0].mediaType}
-                  description={story.slides[0].description}
-                  heading={story.slides[0].heading}
-                  storyId={story._id}
-                  slideId={story.slides[0]._id}
-                  onOpenStoryViewer={openStoryViewer}
-                />
-              ))
-            ) : (
-              <div className="no-stories">No Stories Available</div>
-            )}
-          </div>
-          {storiesByCategory[category.name] &&
-            storiesByCategory[category.name].length > 0 && (
-              <button
-                className="see-more-btn"
-                onClick={() => loadMoreStories(category.name)}
-              >
-                See more
-              </button>
-            )}
-        </div>
-      ))}
+      {/* Stories by Selected Categories */}
+      {selectedCategories.includes("All")
+        ? categories.map((category) => (
+            <div key={category.id}>
+              <h2>Top Stories About {category.name}</h2>
+              <div className="stories-grid">
+                {storiesByCategory[category.name] &&
+                storiesByCategory[category.name].length > 0 ? (
+                  storiesByCategory[category.name].map((story, indx) => (
+                    <SlideCard
+                      key={indx}
+                      mediaSrc={story.slides[0].mediaSrc}
+                      mediaType={story.slides[0].mediaType}
+                      description={story.slides[0].description}
+                      heading={story.slides[0].heading}
+                      storyId={story._id}
+                      slideId={story.slides[0]._id}
+                      onOpenStoryViewer={openStoryViewer}
+                    />
+                  ))
+                ) : (
+                  <div className="no-stories">
+                    {loading ? "Loading ..." : "No Stories Available"}
+                  </div>
+                )}
+              </div>
+              {storiesByCategory[category.name] &&
+                storiesByCategory[category.name].length > 4 && (
+                  <button
+                    className="see-more-btn"
+                    onClick={() => loadMoreStories(category.name)}
+                  >
+                    See more
+                  </button>
+                )}
+            </div>
+          ))
+        : selectedCategories.map((categoryName, indx) => (
+            <div key={indx}>
+              <h2>Top Stories About {categoryName}</h2>
+              <div className="stories-grid">
+                {storiesByCategory[categoryName] &&
+                storiesByCategory[categoryName].length > 0 ? (
+                  storiesByCategory[categoryName].map((story, indx) => (
+                    <SlideCard
+                      key={indx}
+                      mediaSrc={story.slides[0].mediaSrc}
+                      mediaType={story.slides[0].mediaType}
+                      description={story.slides[0].description}
+                      heading={story.slides[0].heading}
+                      storyId={story._id}
+                      slideId={story.slides[0]._id}
+                      onOpenStoryViewer={openStoryViewer}
+                    />
+                  ))
+                ) : (
+                  <div className="no-stories">
+                    {loading ? "Loading ..." : "No Stories Available"}
+                  </div>
+                )}
+              </div>
+              {storiesByCategory[categoryName] &&
+                storiesByCategory[categoryName].length > 4 && (
+                  <button
+                    className="see-more-btn"
+                    onClick={() => loadMoreStories(categoryName)}
+                  >
+                    See more
+                  </button>
+                )}
+            </div>
+          ))}
 
-      {/* Story Viewer Modal */}
+      {/* Story Viewer */}
       {isStoryViewerOpen && (
         <StoryViewer
+          closeViewer={closeStoryViewer}
           storyId={selectedStory}
           slideId={selectedSlide}
-          onClose={closeStoryViewer}
-          showLoginPage={() => setShowLoginIfNot(true)}
         />
       )}
 
-      {/* Login Popup */}
       {showLoginIfNot && (
-        <LoginPopup
-          onClose={() => setShowLoginIfNot(false)}
-          loginOrRegister={"login"}
-        />
+        <LoginPopup onClose={() => setShowLoginIfNot(false)} />
       )}
     </div>
   );
