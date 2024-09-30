@@ -283,7 +283,9 @@ export default function StoryViewer({
     <div className="story-viewer-overlay">
       <div className="story-viewer">
         {loading ? (
-          <p className="story-container story-container-loading">Loading...</p>
+          <p className="story-container ">
+            <span className="story-container-loading">Loading...</span>
+          </p>
         ) : (
           <>
             <div className="story-container">
