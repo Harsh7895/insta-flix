@@ -38,9 +38,6 @@ const allCategory = {
   name: "All",
 };
 
-{
-  /* eslint-disable */
-}
 const Home = () => {
   const [yourStory, setYourStory] = useState(null);
   const [storiesByCategory, setStoriesByCategory] = useState({});
@@ -52,7 +49,7 @@ const Home = () => {
   const [selectedStory, setSelectedStory] = useState(null);
   const [selectedSlide, setSelectedSlide] = useState(null);
   const [isStoryViewerOpen, setStoryViewerOpen] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [showLoginIfNot, setShowLoginIfNot] = useState(false);
 
   const { currentUser } = useSelector((state) => state.user);
@@ -70,13 +67,14 @@ const Home = () => {
           return prev.filter((cat) => cat !== category); // Deselect category
         }
         if (prev.length < 4) {
-          return [...prev, category]; // Add new category up to a max of 4
+          return [...prev, category];
         }
-        return prev; // Ignore if more than 4 categories are selected
+        return prev;
       });
     }
   };
 
+  // Fetch user stories
   const fetchYourStories = async () => {
     if (currentUser) {
       try {
@@ -95,7 +93,7 @@ const Home = () => {
           setYourStory(data.stories);
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
         toast.error("Error fetching your stories.");
       } finally {
         setLoading(false);
@@ -103,11 +101,12 @@ const Home = () => {
     }
   };
 
+  // Fetch stories by category with pagination
   const fetchCategoryStories = async (category, page = 1) => {
     try {
       setLoading(true);
       const res = await fetch(
-        `${api_url}/get-storyby-category?category=${category}&limit=4&page=${page}`,
+        `${api_url}/get-storyby-category?category=${category}&page=${page}&limit=4`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -131,10 +130,19 @@ const Home = () => {
           };
         });
 
-        setPageByCategory((prevPage) => ({
-          ...prevPage,
-          [category]: page,
-        }));
+        // If fewer than 4 new stories are fetched, it means there are no more stories
+        if (data.stories.length < 4) {
+          setPageByCategory((prevPage) => ({
+            ...prevPage,
+            [`${category}_hasMore`]: false, // No more stories for this category
+          }));
+        } else {
+          setPageByCategory((prevPage) => ({
+            ...prevPage,
+            [`${category}_hasMore`]: true, // More stories available
+            [category]: page,
+          }));
+        }
       }
     } catch (error) {
       toast.error("Error fetching stories for category.");
@@ -143,6 +151,7 @@ const Home = () => {
     }
   };
 
+  // Load more stories when "See more" button is clicked
   const loadMoreStories = (category) => {
     const nextPage = (pageByCategory[category] || 1) + 1;
     fetchCategoryStories(category, nextPage);
@@ -178,7 +187,7 @@ const Home = () => {
       fetchYourStories();
     }
     fetchInitialStories();
-  }, []);
+  }, [currentUser]);
 
   return (
     <div className="app">
@@ -249,7 +258,8 @@ const Home = () => {
                 )}
               </div>
               {storiesByCategory[category.name] &&
-                storiesByCategory[category.name].length > 4 && (
+                storiesByCategory[category.name].length > 4 &&
+                pageByCategory[`${category.name}_hasMore`] && (
                   <button
                     className="see-more-btn"
                     onClick={() => loadMoreStories(category.name)}
@@ -284,7 +294,8 @@ const Home = () => {
                 )}
               </div>
               {storiesByCategory[categoryName] &&
-                storiesByCategory[categoryName].length > 4 && (
+                storiesByCategory[categoryName].length > 4 &&
+                pageByCategory[`${categoryName}_hasMore`] && (
                   <button
                     className="see-more-btn"
                     onClick={() => loadMoreStories(categoryName)}
@@ -298,13 +309,14 @@ const Home = () => {
       {/* Story Viewer */}
       {isStoryViewerOpen && (
         <StoryViewer
-          onClose={closeStoryViewer}
           storyId={selectedStory}
           slideId={selectedSlide}
+          onClose={closeStoryViewer}
         />
       )}
 
-      {showLoginIfNot && (
+      {/* Login Popup */}
+      {!currentUser && showLoginIfNot && (
         <LoginPopup onClose={() => setShowLoginIfNot(false)} />
       )}
     </div>
