@@ -159,9 +159,43 @@
   align-items: center;
 }
 
-@media (max-width: 780px) {
+.next-slide-mob {
+  position: absolute;
+  top: 16%;
+  right: 0;
+  width: 100px;
+  height: 400px;
+  background-color: transparent;
+  cursor: pointer;
+  display: none;
+}
+.prev-slide-mob {
+  position: absolute;
+  top: 16%;
+  left: 0;
+  width: 100px;
+  height: 400px;
+  background-color: transparent;
+  cursor: pointer;
+  display: none;
+}
+
+@media (max-width: 680px) {
   .story-container {
     height: 100%;
     width: 100%;
+  }
+  .story-content {
+    margin-bottom: 20px;
+  }
+  .story-actions {
+    margin-bottom: 20px;
+  }
+  .prev-slide-mob,
+  .next-slide-mob {
+    display: block;
+  }
+  .nav-btn {
+    display: none;
   }
 }

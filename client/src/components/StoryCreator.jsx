@@ -81,12 +81,13 @@ export default function StoryCreator({ onClose, storyId = null }) {
 
   const detectMediaType = async (url) => {
     const videoExtensions = ["mp4", "webm", "ogg"];
-    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg", "tiff"];
 
     try {
       const response = await fetch(url, { method: "HEAD" });
       const contentType = response.headers.get("Content-Type");
 
+      // If Content-Type is available, use it
       if (contentType) {
         if (contentType.startsWith("video/")) {
           return "video";
@@ -94,16 +95,17 @@ export default function StoryCreator({ onClose, storyId = null }) {
           return "image";
         }
       }
+    } catch (error) {
+      console.warn("Could not fetch Content-Type:", error);
+    }
 
-      const extension = url.split(".").pop().toLowerCase();
-      if (videoExtensions.includes(extension)) {
-        return "video";
-      } else if (imageExtensions.includes(extension)) {
-        return "image";
-      } else {
-        return null;
-      }
-    } catch {
+    // Fallback to checking the URL extension
+    const extension = url.split(".").pop().split(/\?|#/)[0].toLowerCase();
+    if (videoExtensions.includes(extension)) {
+      return "video";
+    } else if (imageExtensions.includes(extension)) {
+      return "image";
+    } else {
       return null;
     }
   };

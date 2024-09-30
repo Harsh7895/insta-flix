@@ -38,6 +38,9 @@ const allCategory = {
   name: "All",
 };
 
+{
+  /* eslint-disable */
+}
 const Home = () => {
   const [yourStory, setYourStory] = useState(null);
   const [storiesByCategory, setStoriesByCategory] = useState({});

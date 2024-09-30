@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { FaBookmark, FaHeart } from "react-icons/fa";
-import { IoPaperPlaneOutline } from "react-icons/io5";
 import { toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom"; // Import React Router hooks
 import "../styles/story.css";
 import { useDispatch, useSelector } from "react-redux";
+import { FaBookmark, FaHeart } from "react-icons/fa";
+import { IoPaperPlaneOutline } from "react-icons/io5";
+import { IoMdDownload } from "react-icons/io";
+import { MdDownloadDone } from "react-icons/md";
 import { signInSuccess } from "../../redux/user/userSlice";
 
 const api_url = "https://insta-flix-api.vercel.app/api/v1";
@@ -27,11 +29,11 @@ export default function StoryViewer({
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isShared, setIsShared] = useState(false);
+  const [isDownloaded, setIsDownloaded] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const videoRef = useRef(null);
 
-  console.log(currentUser);
   // Fetch story data when component mounts or params change
   useEffect(() => {
     document.body.classList.add("no-scroll");
@@ -150,6 +152,7 @@ export default function StoryViewer({
         storyId,
         slideId: story.slides[newSlideIndex]._id,
       });
+      setIsDownloaded(false);
     }
   };
 
@@ -163,6 +166,8 @@ export default function StoryViewer({
         storyId,
         slideId: story.slides[newSlideIndex]._id,
       });
+
+      setIsDownloaded(false);
     }
   };
 
@@ -254,6 +259,26 @@ export default function StoryViewer({
     }
   };
 
+  const downloadMedia = () => {
+    fetch(story.slides[currentSlide].mediaSrc)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download =
+          story.slides[currentSlide].mediaType === "image"
+            ? `${story.slides[currentSlide].mediaType}.jpg`
+            : `${story.slides[currentSlide].mediaType}.mp4`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        setIsDownloaded(true);
+      })
+      .catch((error) => toast.error("Error downloading media:", error));
+  };
+
   return (
     <div className="story-viewer-overlay">
       <div className="story-viewer">
@@ -323,6 +348,18 @@ export default function StoryViewer({
                     color={isBookmarked ? "blue" : "white"}
                   />
                 </button>
+
+                <button
+                  className="story-actions-btn"
+                  disabled={isDownloaded}
+                  onClick={downloadMedia}
+                >
+                  {isDownloaded ? (
+                    <MdDownloadDone color="white" size={24} />
+                  ) : (
+                    <IoMdDownload color="white" size={24} />
+                  )}
+                </button>
                 <button
                   className="action-btn"
                   onClick={() =>
@@ -340,6 +377,13 @@ export default function StoryViewer({
             <button className="nav-btn next-slide" onClick={handleNextSlide}>
               ❯
             </button>
+
+            <div className="prev-slide-mob" onClick={handlePrevSlide}>
+              .
+            </div>
+            <div className="next-slide-mob " onClick={handleNextSlide}>
+              .
+            </div>
           </>
         )}
       </div>
