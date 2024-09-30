@@ -179,6 +179,12 @@
   cursor: pointer;
   display: none;
 }
+.story-container-loading {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+  color: white;
+}
 
 @media (max-width: 680px) {
   .story-container {
