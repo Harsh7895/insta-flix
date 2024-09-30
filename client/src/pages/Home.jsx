@@ -155,6 +155,7 @@ const Home = () => {
   const loadMoreStories = (category) => {
     const nextPage = (pageByCategory[category] || 1) + 1;
     fetchCategoryStories(category, nextPage);
+    pageByCategory[`${category}_hasMore`] = false;
   };
 
   const openStoryViewer = (storyId, slideId) => {
