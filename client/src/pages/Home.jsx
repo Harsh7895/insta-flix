@@ -93,7 +93,6 @@ const Home = () => {
           setYourStory(data.stories);
         }
       } catch (error) {
-        console.error(error);
         toast.error("Error fetching your stories.");
       } finally {
         setLoading(false);
@@ -129,9 +128,10 @@ const Home = () => {
             [category]: [...currentStories, ...uniqueNewStories],
           };
         });
+        console.log(data);
 
         // If fewer than 4 new stories are fetched, it means there are no more stories
-        if (data.stories.length < 4) {
+        if (data.totalStories <= 4) {
           setPageByCategory((prevPage) => ({
             ...prevPage,
             [`${category}_hasMore`]: false, // No more stories for this category
@@ -258,7 +258,7 @@ const Home = () => {
                 )}
               </div>
               {storiesByCategory[category.name] &&
-                storiesByCategory[category.name].length > 4 &&
+                storiesByCategory[category.name].length >= 4 &&
                 pageByCategory[`${category.name}_hasMore`] && (
                   <button
                     className="see-more-btn"
@@ -294,7 +294,7 @@ const Home = () => {
                 )}
               </div>
               {storiesByCategory[categoryName] &&
-                storiesByCategory[categoryName].length > 4 &&
+                storiesByCategory[categoryName].length >= 4 &&
                 pageByCategory[`${categoryName}_hasMore`] && (
                   <button
                     className="see-more-btn"
