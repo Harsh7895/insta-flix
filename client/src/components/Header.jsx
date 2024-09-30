@@ -4,6 +4,7 @@ import LoginPopup from "./LoginPopup.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { IoBookmarkSharp } from "react-icons/io5";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { FaHome } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import {
   signOutStart,
@@ -174,6 +175,12 @@ const Header = () => {
   return (
     <>
       <header className="header">
+        <FaHome
+          className="home-icon"
+          size={20}
+          color="black"
+          onClick={() => navigate("/")}
+        />
         {!currentUser ? (
           <>
             <button

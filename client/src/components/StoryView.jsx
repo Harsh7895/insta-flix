@@ -325,8 +325,12 @@ export default function StoryViewer({
                   controls={false}
                   autoPlay
                   loop
-                  muted
+                  controlsList="nofullscreen"
+                  disablePictureInPicture
+                  disableRemotePlayback
+                  unselectable="controls"
                   ref={videoRef}
+                  poster="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/45148b8a-5dc4-4263-8612-ada44c29cbc7/deda14r-67a63673-9408-417a-b40b-6fa693e5fa56.jpg/v1/fill/w_686,h_1165,q_70,strp/instagram_loading__by_azabelabigail_deda14r-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTM3MiIsInBhdGgiOiJcL2ZcLzQ1MTQ4YjhhLTVkYzQtNDI2My04NjEyLWFkYTQ0YzI5Y2JjN1wvZGVkYTE0ci02N2E2MzY3My05NDA4LTQxN2EtYjQwYi02ZmE2OTNlNWZhNTYuanBnIiwid2lkdGgiOiI8PTgwOCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.tdKS9SIhUwxGJSh4TPUOu1J6O-BKhRc2pUVMBrdzFHk"
                 ></video>
               )}
               <div className="story-content">

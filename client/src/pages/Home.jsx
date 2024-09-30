@@ -8,7 +8,9 @@ import LoginPopup from "../components/LoginPopup.jsx";
 import { useSearchParams } from "react-router-dom";
 
 const api_url = "https://insta-flix-api.vercel.app/api/v1/story";
-
+{
+  /* eslint-disable*/
+}
 const categories = [
   {
     id: 2,
@@ -51,7 +53,6 @@ const Home = () => {
   const [isStoryViewerOpen, setStoryViewerOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const [showLoginIfNot, setShowLoginIfNot] = useState(false);
-
   const { currentUser } = useSelector((state) => state.user);
 
   // Handle category selection
@@ -205,7 +206,7 @@ const Home = () => {
             }
           >
             <img src={category.imgSrc} alt={category.name} />
-            <p>{category.name}</p>
+            <a href={`#${category.name}`}>{category.name}</a>
           </div>
         ))}
       </div>
@@ -272,7 +273,7 @@ const Home = () => {
           ))
         : selectedCategories.map((categoryName, indx) => (
             <div key={indx}>
-              <h2>Top Stories About {categoryName}</h2>
+              <h2 id={categoryName}>Top Stories About {categoryName}</h2>
               <div className="stories-grid">
                 {storiesByCategory[categoryName] &&
                 storiesByCategory[categoryName].length > 0 ? (

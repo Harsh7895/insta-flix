@@ -40,3 +40,13 @@
 .bookmark-container::-webkit-scrollbar {
   display: none;
 }
+
+@media (max-width: 580px) {
+  .bookmark-container {
+    > div {
+      display: flex;
+      justify-content: space-evenly;
+      flex-wrap: wrap;
+    }
+  }
+}

@@ -45,7 +45,7 @@
   object-fit: cover;
 }
 
-.category-item p {
+.category-item a {
   color: white;
   position: absolute;
   z-index: 100;
@@ -60,6 +60,7 @@
   transform: translate(-50%);
   font-size: 24px;
   font-weight: 700;
+  text-decoration: none;
 }
 
 .stories-grid {
@@ -123,5 +124,11 @@ h2 {
     > .your-stories {
       display: none;
     }
+  }
+
+  .stories-grid {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
   }
 }

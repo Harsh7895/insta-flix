@@ -114,3 +114,9 @@ label {
     padding: 20px;
   }
 }
+
+@media (max-width: 580px) {
+  .password-input {
+    width: 79%;
+  }
+}
