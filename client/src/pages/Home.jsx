@@ -131,7 +131,7 @@ const Home = () => {
         console.log(data);
 
         // If fewer than 4 new stories are fetched, it means there are no more stories
-        if (data.totalStories <= 4) {
+        if (data.totalStories <= 4 * page) {
           setPageByCategory((prevPage) => ({
             ...prevPage,
             [`${category}_hasMore`]: false, // No more stories for this category
