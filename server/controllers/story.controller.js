@@ -139,8 +139,6 @@ export const getCategoryStories = async (req, res) => {
 
   try {
     const stories = await Story.find(query)
-      .skip((page - 1) * limit)
-      .limit(limit)
       .populate("createdBy", "username")
       .sort({ createdAt: -1, _id: -1 });
 
