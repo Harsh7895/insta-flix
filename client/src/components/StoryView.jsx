@@ -59,8 +59,8 @@ export default function StoryViewer({
           const slideIndex = data.story.slides.findIndex(
             (slide) => slide._id === slideId
           );
-          setSlideLikes(data.story[currentSlide].likeCount);
           setCurrentSlide(slideIndex !== -1 ? slideIndex : 0);
+          setSlideLikes(data.story[currentSlide].likeCount);
         }
       } catch (error) {
         toast.error("Error fetching story.");
