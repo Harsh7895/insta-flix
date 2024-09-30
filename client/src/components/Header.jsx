@@ -4,6 +4,7 @@ import LoginPopup from "./LoginPopup.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { IoBookmarkSharp } from "react-icons/io5";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { RxCross2 } from "react-icons/rx";
 import { FaHome } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import {
@@ -13,6 +14,7 @@ import {
 } from "../../redux/user/userSlice.js";
 import StoryCreator from "./StoryCreator.jsx";
 import { useNavigate } from "react-router-dom";
+import { formatWordsSpace } from "../utils/util.js";
 
 const bgColors = [
   "#ef9a9a",
@@ -54,7 +56,7 @@ const HamburgerToggle = ({
           >
             {currentUser?.username?.charAt(0).toUpperCase()}
           </span>
-          {currentUser ? name : "Guest"}
+          {formatWordsSpace(name, 15)}
         </p>
       )}
       {!currentUser ? (
@@ -121,7 +123,7 @@ const HamburgerToggle = ({
       )}
 
       <div className="close-hamburger" onClick={onClose}>
-        X
+        <RxCross2 size={20} fontWeight={900} />
       </div>
     </div>
   );

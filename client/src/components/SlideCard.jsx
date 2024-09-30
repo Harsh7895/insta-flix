@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../styles/slidecard.css";
 import { BiEdit } from "react-icons/bi";
 import StoryCreator from "./StoryCreator";
+import { formatWordsSpace } from "../utils/util";
 
 {
   /* eslint-disable */
@@ -33,9 +34,12 @@ const SlideCard = ({
           width={"267px"}
         ></video>
       )}
-      <div className="story-description">
-        <h3>{heading}</h3>
-        <p>{description}</p>
+      <div
+        className="story-description"
+        style={{ bottom: showEdit ? "20px" : "0" }}
+      >
+        <h3>{formatWordsSpace(heading, 30)}</h3>
+        <p>{formatWordsSpace(description, 70)}</p>
       </div>
 
       {showEdit && storyId && (

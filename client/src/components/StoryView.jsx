@@ -8,6 +8,7 @@ import { IoPaperPlaneOutline } from "react-icons/io5";
 import { IoMdDownload } from "react-icons/io";
 import { MdDownloadDone } from "react-icons/md";
 import { signInSuccess } from "../../redux/user/userSlice";
+import { formatWordsSpace } from "../utils/util";
 
 const api_url = "https://insta-flix-api.vercel.app/api/v1";
 
@@ -60,7 +61,8 @@ export default function StoryViewer({
             (slide) => slide._id === slideId
           );
           setCurrentSlide(slideIndex !== -1 ? slideIndex : 0);
-          setSlideLikes(data.story[currentSlide].likeCount);
+          setSlideLikes(data.story?.slides[currentSlide].likeCount);
+          console.log(slideLikes);
         }
       } catch (error) {
         toast.error("Error fetching story.");
@@ -154,6 +156,7 @@ export default function StoryViewer({
         slideId: story.slides[newSlideIndex]._id,
       });
       setIsDownloaded(false);
+      setSlideLikes(story.sldies?.[newSlideIndex].likeCount);
     }
   };
 
@@ -169,6 +172,7 @@ export default function StoryViewer({
       });
 
       setIsDownloaded(false);
+      setSlideLikes(story.slides?.[newSlideIndex]?.likeCount);
     }
   };
 
@@ -235,7 +239,12 @@ export default function StoryViewer({
         return;
       }
       setIsLiked(data.isLiked);
+      const updatedStory = { ...story };
+      updatedStory.slides[currentSlide].likeCount =
+        updatedStory.slides[currentSlide].likeCount + (data.isLiked ? 1 : -1);
 
+      setStory(updatedStory);
+      setSlideLikes(story.slides[currentSlide].likeCount);
       dispatch(signInSuccess({ token: currentUser.token, ...data.rest }));
     } catch (error) {
       console.log(error);
@@ -336,8 +345,18 @@ export default function StoryViewer({
               )}
               <div className="story-content">
                 {isShared && <p id="copiedLink">Link Copied to Clipboard</p>}
-                <h2>{story?.slides[currentSlide].heading}</h2>
-                <p>{story?.slides[currentSlide].description}</p>
+                <h2>
+                  {formatWordsSpace(
+                    story?.slides[currentSlide]?.heading || "",
+                    30
+                  )}
+                </h2>
+                <p>
+                  {formatWordsSpace(
+                    story?.slides[currentSlide]?.description || "",
+                    100
+                  )}
+                </p>
               </div>
               <div className="story-actions">
                 <button
