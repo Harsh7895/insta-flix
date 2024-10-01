@@ -56,21 +56,19 @@ const Home = () => {
   const [showLoginIfNot, setShowLoginIfNot] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
 
-  // New state for pagination
   const [yourStoriesPage, setYourStoriesPage] = useState(1);
   const [yourStoriesHasMore, setYourStoriesHasMore] = useState(true);
 
-  // Handle category selection
   const handleSelect = (category) => {
     if (category === "All") {
-      setSelectedCategories([category]); // Clear other selections and show all
+      setSelectedCategories([category]);
     } else {
       setSelectedCategories((prev) => {
         if (prev.includes("All")) {
-          return [category]; // Remove "All" when selecting a specific category
+          return [category];
         }
         if (prev.includes(category)) {
-          return prev.filter((cat) => cat !== category); // Deselect category
+          return prev.filter((cat) => cat !== category);
         }
         if (prev.length < 4) {
           return [...prev, category];
@@ -80,7 +78,6 @@ const Home = () => {
     }
   };
 
-  // Fetch user stories with pagination
   const fetchYourStories = async (page = 1) => {
     if (currentUser) {
       try {
@@ -150,7 +147,6 @@ const Home = () => {
     }
   };
 
-  // Load more stories when "See more" button is clicked
   const loadMoreYourStories = () => {
     const nextPage = yourStoriesPage + 1;
     setYourStoriesPage(nextPage);
@@ -188,6 +184,7 @@ const Home = () => {
   };
 
   useEffect(() => {
+    setYourStory([]);
     if (currentUser) {
       fetchYourStories(yourStoriesPage); // Fetch user's stories on load
     }
