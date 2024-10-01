@@ -144,7 +144,7 @@ const Home = () => {
         }));
       }
     } catch (error) {
-      toast.error("Error fetching stories for category.");
+      console.log("Error fetching stories for category.");
     } finally {
       setLoading(false);
     }
