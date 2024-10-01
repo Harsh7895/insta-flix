@@ -77,17 +77,21 @@ export const getStory = async (req, res, next) => {
 
 export const getUserStories = async (req, res, next) => {
   try {
-    const userId = req.user.id; // Extract user ID from the request
-    const page = parseInt(req.query.page) || 1; // Get the page number from the query parameters, default to 1
-    const limit = 4; // Set the number of stories per page
-    const skip = (page - 1) * limit; // Calculate how many stories to skip
+    const userId = req.user.id;
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = 4;
+    const skip = (page - 1) * limit;
 
-    // Fetch the user's stories with pagination
-    const stories = await Story.find({ createdBy: userId })
-      .skip(skip) // Skip the first 'skip' number of stories
-      .limit(limit); // Limit the results to 'limit' number of stories
+    const fetchAll = req.query.all === "true";
 
-    const totalStories = await Story.countDocuments({ createdBy: userId }); // Count total stories
+    let stories;
+    if (fetchAll) {
+      stories = await Story.find({ createdBy: userId });
+    } else {
+      stories = await Story.find({ createdBy: userId }).skip(skip).limit(limit);
+    }
+
+    const totalStories = await Story.countDocuments({ createdBy: userId });
 
     res.status(200).json({
       success: true,

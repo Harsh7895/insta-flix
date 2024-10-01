@@ -24,7 +24,7 @@ const YourStories = () => {
         return;
       }
       try {
-        const res = await fetch(`${api_url}/get-user-story`, {
+        const res = await fetch(`${api_url}/get-user-story?all=true`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
