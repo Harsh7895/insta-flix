@@ -94,7 +94,7 @@ const Home = () => {
         });
         const data = await res.json();
         if (!data.success) {
-          toast.error(data.message);
+          return;
         } else {
           setYourStory((prev) => [...prev, ...data.stories]);
           setYourStoriesHasMore(data.totalStories > 4 * page);
@@ -120,7 +120,8 @@ const Home = () => {
       );
       const data = await res.json();
       if (!data.success) {
-        toast.error(data.message);
+        // toast.error(data.message);
+        console.log(data.message);
       } else {
         setStoriesByCategory((prevStories) => {
           const currentStories = prevStories[category] || [];
