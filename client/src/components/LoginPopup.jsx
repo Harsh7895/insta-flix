@@ -130,7 +130,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
           onClick={handleRegisterOrLogin}
           disabled={loading}
         >
-          {capitalizedWord}
+          {loading ? `${capitalizedWord}ing...` : capitalizedWord}
         </button>
       </div>
     </div>
