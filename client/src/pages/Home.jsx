@@ -320,6 +320,7 @@ const Home = () => {
           storyId={selectedStory}
           slideId={selectedSlide}
           onClose={closeStoryViewer}
+          showLoginPage={() => setShowLoginIfNot(true)}
         />
       )}
 
