@@ -130,7 +130,7 @@ header {
   .hamburger-toggle {
     width: 100vw;
     height: auto;
-    top: 7%;
+    top: 5%;
     > p {
       display: flex;
       justify-content: center;
