@@ -60,6 +60,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
       const data = await res.json();
       if (data.success === false) {
         toast.error(data.message);
+        setError(data.message);
         return;
       }
 
