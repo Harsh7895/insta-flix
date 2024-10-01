@@ -210,9 +210,9 @@ export default function StoryViewer({
 
   const toggleLikeSlide = async (storyId, slideId) => {
     if (!currentUser) {
-      onClose();
-      showLoginPage();
       setSearchParams({});
+      showLoginPage();
+      onClose();
       return;
     }
     try {
@@ -254,10 +254,8 @@ export default function StoryViewer({
     }
   };
 
-  // Copy shared link to clipboard
   const copyToClipboard = async () => {
     try {
-      // Generate a shareable URL with the current story and slide
       const sharedLink = `${window.location.origin}?storyId=${storyId}&slideId=${story.slides[currentSlide]._id}`;
       await navigator.clipboard.writeText(sharedLink);
       setIsShared(true);
