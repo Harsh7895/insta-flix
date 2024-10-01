@@ -68,7 +68,11 @@ const Home = () => {
           return [category];
         }
         if (prev.includes(category)) {
-          return prev.filter((cat) => cat !== category);
+          const newCategories = prev.filter((cat) => cat !== category);
+          if (newCategories.length === 0) {
+            return [allCategory.name];
+          }
+          return newCategories;
         }
         if (prev.length < 4) {
           return [...prev, category];
@@ -104,7 +108,6 @@ const Home = () => {
     }
   };
 
-  // Fetch stories by category with pagination
   const fetchCategoryStories = async (category, page = 1) => {
     try {
       setLoading(true);
@@ -117,7 +120,6 @@ const Home = () => {
       );
       const data = await res.json();
       if (!data.success) {
-        // toast.error(data.message);
         console.log(data.message);
       } else {
         setStoriesByCategory((prevStories) => {
@@ -133,7 +135,6 @@ const Home = () => {
           };
         });
 
-        // Check if there are more stories to load
         setPageByCategory((prevPage) => ({
           ...prevPage,
           [`${category}_hasMore`]: data.totalStories > 4 * page,
