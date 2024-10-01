@@ -17,7 +17,7 @@ export const registerUser = async (req, res, next) => {
     });
     res.status(200).json({
       success: true,
-      message: "User created successfully!",
+      message: "User created successfully, Login Now!",
     });
   } catch (error) {
     next(error);
