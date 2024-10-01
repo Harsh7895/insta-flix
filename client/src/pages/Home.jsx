@@ -326,7 +326,10 @@ const Home = () => {
 
       {/* Login Popup */}
       {!currentUser && showLoginIfNot && (
-        <LoginPopup onClose={() => setShowLoginIfNot(false)} />
+        <LoginPopup
+          onClose={() => setShowLoginIfNot(false)}
+          loginOrRegister={"login"}
+        />
       )}
     </div>
   );

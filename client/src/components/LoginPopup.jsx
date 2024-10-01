@@ -34,7 +34,7 @@ const LoginPopup = ({ onClose, loginOrRegister }) => {
   };
 
   const capitalizedWord =
-    loginOrRegister.charAt(0).toUpperCase() + loginOrRegister.slice(1);
+    loginOrRegister?.charAt(0)?.toUpperCase() + loginOrRegister.slice(1);
 
   const handleRegisterOrLogin = async () => {
     if (!username.trim()) {
