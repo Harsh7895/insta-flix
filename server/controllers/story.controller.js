@@ -90,7 +90,7 @@ export const getUserStories = async (req, res, next) => {
     const totalStories = await Story.countDocuments({ createdBy: userId }); // Count total stories
 
     if (!stories.length) {
-      return next(new ErrorHandler(404, "There are no stories!"));
+      return next(ErrorHandler(404, "There are no stories!"));
     }
 
     res.status(200).json({
