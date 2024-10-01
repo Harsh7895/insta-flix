@@ -108,7 +108,7 @@ h2 {
       height: 95.15px;
       border-radius: 20px;
       position: relative;
-      > p {
+      > a {
         position: absolute;
         height: 95.15px;
         width: 142.6px;
