@@ -134,15 +134,17 @@ const Header = () => {
   const [loginOrRegister, setLoginOrRegister] = useState("");
   const [showHamburgerToggle, setShowHamburgerToggle] = useState(false);
   const [showCreateStoryForm, setShowCreateStoryForm] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { currentUser, loading } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);
 
   const randomColor = bgColors[Math.floor(Math.random() * bgColors.length)];
 
   const handleLogout = async () => {
     try {
+      setLoading(true);
       dispatch(signOutStart());
       const res = await fetch(`${Url}/logout`, {
         method: "POST",
@@ -166,6 +168,8 @@ const Header = () => {
     } catch (error) {
       toast.error(error.message);
       dispatch(signOutFailure(error.message));
+    } finally {
+      setLoading(false);
     }
   };
 
