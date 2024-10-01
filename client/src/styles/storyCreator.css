@@ -47,7 +47,7 @@
 }
 
 .slide-tab {
-  padding: 10px 15px;
+  padding: 15px;
   margin-right: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -56,6 +56,7 @@
   font-size: 14px;
   white-space: nowrap;
   position: relative;
+  font-weight: 500;
 
   > .slide-close-btn {
     position: absolute;
@@ -69,7 +70,7 @@
 .slide-tab.active {
   background-color: #e6e6e6;
   border-color: #2196f3;
-  color: #2196f3;
+  color: black;
 }
 
 .remove-slide {

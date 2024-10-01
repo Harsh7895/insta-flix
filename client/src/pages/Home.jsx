@@ -8,9 +8,7 @@ import LoginPopup from "../components/LoginPopup.jsx";
 import { useSearchParams } from "react-router-dom";
 
 const api_url = "https://insta-flix-api.vercel.app/api/v1/story";
-{
-  /* eslint-disable*/
-}
+
 const categories = [
   {
     id: 2,
@@ -41,19 +39,23 @@ const allCategory = {
 };
 
 const Home = () => {
-  const [yourStory, setYourStory] = useState(null);
+  const [yourStory, setYourStory] = useState([]);
   const [storiesByCategory, setStoriesByCategory] = useState({});
   const [pageByCategory, setPageByCategory] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([
     allCategory.name,
-  ]); // Start with "All" selected
+  ]);
   const [selectedStory, setSelectedStory] = useState(null);
   const [selectedSlide, setSelectedSlide] = useState(null);
   const [isStoryViewerOpen, setStoryViewerOpen] = useState(false);
   const [searchParams] = useSearchParams();
   const [showLoginIfNot, setShowLoginIfNot] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
+
+  // New state for pagination
+  const [yourStoriesPage, setYourStoriesPage] = useState(1);
+  const [yourStoriesHasMore, setYourStoriesHasMore] = useState(true);
 
   // Handle category selection
   const handleSelect = (category) => {
@@ -75,12 +77,12 @@ const Home = () => {
     }
   };
 
-  // Fetch user stories
-  const fetchYourStories = async () => {
+  // Fetch user stories with pagination
+  const fetchYourStories = async (page = 1) => {
     if (currentUser) {
       try {
         setLoading(true);
-        const res = await fetch(`${api_url}/get-user-story`, {
+        const res = await fetch(`${api_url}/get-user-story?page=${page}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -91,7 +93,8 @@ const Home = () => {
         if (!data.success) {
           toast.error(data.message);
         } else {
-          setYourStory(data.stories);
+          setYourStory((prev) => [...prev, ...data.stories]);
+          setYourStoriesHasMore(data.totalStories > 4 * page);
         }
       } catch (error) {
         toast.error("Error fetching your stories.");
@@ -118,7 +121,6 @@ const Home = () => {
       } else {
         setStoriesByCategory((prevStories) => {
           const currentStories = prevStories[category] || [];
-
           const uniqueNewStories = data.stories.filter(
             (newStory) =>
               !currentStories.some((story) => story._id === newStory._id)
@@ -129,21 +131,13 @@ const Home = () => {
             [category]: [...currentStories, ...uniqueNewStories],
           };
         });
-        console.log(data);
 
-        // If fewer than 4 new stories are fetched, it means there are no more stories
-        if (data.totalStories <= 4 * page) {
-          setPageByCategory((prevPage) => ({
-            ...prevPage,
-            [`${category}_hasMore`]: false, // No more stories for this category
-          }));
-        } else {
-          setPageByCategory((prevPage) => ({
-            ...prevPage,
-            [`${category}_hasMore`]: true, // More stories available
-            [category]: page,
-          }));
-        }
+        // Check if there are more stories to load
+        setPageByCategory((prevPage) => ({
+          ...prevPage,
+          [`${category}_hasMore`]: data.totalStories > 4 * page,
+          [category]: page,
+        }));
       }
     } catch (error) {
       toast.error("Error fetching stories for category.");
@@ -153,10 +147,15 @@ const Home = () => {
   };
 
   // Load more stories when "See more" button is clicked
+  const loadMoreYourStories = () => {
+    const nextPage = yourStoriesPage + 1;
+    setYourStoriesPage(nextPage);
+    fetchYourStories(nextPage);
+  };
+
   const loadMoreStories = (category) => {
     const nextPage = (pageByCategory[category] || 1) + 1;
     fetchCategoryStories(category, nextPage);
-    pageByCategory[`${category}_hasMore`] = false;
   };
 
   const openStoryViewer = (storyId, slideId) => {
@@ -174,7 +173,7 @@ const Home = () => {
       setSelectedSlide(slideId);
       setStoryViewerOpen(true);
     }
-  }, []);
+  }, [searchParams]);
 
   const closeStoryViewer = () => {
     setStoryViewerOpen(false);
@@ -186,7 +185,7 @@ const Home = () => {
 
   useEffect(() => {
     if (currentUser) {
-      fetchYourStories();
+      fetchYourStories(yourStoriesPage); // Fetch user's stories on load
     }
     fetchInitialStories();
   }, [currentUser]);
@@ -212,7 +211,7 @@ const Home = () => {
       </div>
 
       {/* Your Stories Section */}
-      {currentUser && yourStory && yourStory.length > 0 && (
+      {currentUser && yourStory.length > 0 && (
         <>
           <h2 className="your-stories">Your Stories</h2>
           <div className="stories-grid your-stories">
@@ -230,6 +229,11 @@ const Home = () => {
               />
             ))}
           </div>
+          {yourStoriesHasMore && (
+            <button className="see-more-btn" onClick={loadMoreYourStories}>
+              See More
+            </button>
+          )}
         </>
       )}
 
