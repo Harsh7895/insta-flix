@@ -130,8 +130,9 @@ export default function StoryCreator({ onClose, storyId = null }) {
       const slideErrors = [];
       if (!slide.heading) slideErrors.push("heading");
       if (!slide.description) slideErrors.push("description");
-      if (!slide.mediaSrc) slideErrors.push("mediaSrc");
-      if (!slide.mediaType) slideErrors.push("mediaType");
+      if (!slide.mediaSrc || !slide.mediaType)
+        slideErrors.push(" Incorrect or Invalid mediaSrc");
+
       if (slideErrors.length) {
         errors.push({ slideNumber: index + 1, errors: slideErrors });
       }
