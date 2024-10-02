@@ -15,6 +15,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="*" element={<Home />} />
         <Route element={<PrivateRoute />}>
           <Route path="/bookmarks" element={<Bookmark />} />
           <Route path="/your-stories" element={<YourStories />} />
