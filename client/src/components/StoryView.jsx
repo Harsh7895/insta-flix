@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useSearchParams, useNavigate } from "react-router-dom"; // Import React Router hooks
+import { useSearchParams } from "react-router-dom"; // Import React Router hooks
 import "../styles/story.css";
 import { useDispatch, useSelector } from "react-redux";
 import { FaBookmark, FaHeart } from "react-icons/fa";
@@ -34,7 +34,6 @@ export default function StoryViewer({
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const videoRef = useRef(null);
-  const navigate = useNavigate();
 
   // Fetch story data when component mounts or params change
   useEffect(() => {
@@ -67,7 +66,8 @@ export default function StoryViewer({
         }
       } catch (error) {
         toast.error("Error fetching story.");
-        navigate("/");
+        setSearchParams({});
+        onClose();
       } finally {
         setLoading(false);
       }
