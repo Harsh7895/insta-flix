@@ -86,7 +86,7 @@ const YourStories = () => {
                 ))}
               </div>
             ) : (
-              <p>No bookmarked stories found.</p>
+              <p>No stories found.</p>
             )}
           </>
         )}
