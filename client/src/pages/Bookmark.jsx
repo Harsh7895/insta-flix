@@ -45,7 +45,6 @@ const Bookmark = () => {
         setBookmarks(data.bookmarkedStories);
       } catch (error) {
         console.log(error);
-        toast.error("Error fetching bookmarks.");
       } finally {
         setLoading(false);
       }

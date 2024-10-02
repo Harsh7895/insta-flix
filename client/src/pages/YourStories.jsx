@@ -39,7 +39,6 @@ const YourStories = () => {
         }
       } catch (error) {
         console.error(error);
-        toast.error("Error fetching your stories.");
       } finally {
         setLoading(false);
       }
