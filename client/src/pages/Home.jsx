@@ -232,7 +232,11 @@ const Home = () => {
             ))}
           </div>
           {yourStoriesHasMore && (
-            <button className="see-more-btn" onClick={loadMoreYourStories}>
+            <button
+              className="see-more-btn"
+              onClick={loadMoreYourStories}
+              disabled={loading}
+            >
               See More
             </button>
           )}
@@ -271,6 +275,7 @@ const Home = () => {
                   <button
                     className="see-more-btn"
                     onClick={() => loadMoreStories(category.name)}
+                    disabled={loading}
                   >
                     See more
                   </button>
