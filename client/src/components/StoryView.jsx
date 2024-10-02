@@ -54,7 +54,9 @@ export default function StoryViewer({
         });
         const data = await res.json();
         if (!data.success) {
-          toast.error(data.message);
+          setSearchParams({});
+          toast.error("Invalid Story");
+          onClose();
         } else {
           setStory(data.story);
           const slideIndex = data.story.slides.findIndex(
