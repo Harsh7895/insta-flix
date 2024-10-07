@@ -68,7 +68,7 @@ const YourStories = () => {
           <p>Loading...</p>
         ) : (
           <>
-            {yourStories.length > 0 ? (
+            {yourStories?.length > 0 ? (
               <div>
                 {yourStories.map((story, indx) => (
                   <SlideCard
