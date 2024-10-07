@@ -75,7 +75,7 @@ const Bookmark = () => {
 
         <div>
           {bookmarks &&
-            bookmarks.length > 0 &&
+            bookmarks?.length > 0 &&
             bookmarks.map((story, indx) => (
               <SlideCard
                 key={indx}
@@ -89,7 +89,7 @@ const Bookmark = () => {
               />
             ))}
         </div>
-        {(!bookmarks || bookmarks.length < 1) && (
+        {(!bookmarks || bookmarks?.length < 1) && (
           <p>
             {loading ? (
               "Loading...."
