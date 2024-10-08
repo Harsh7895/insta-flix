@@ -42,7 +42,7 @@ const Bookmark = () => {
           return;
         }
 
-        setBookmarks(data.bookmarkedStories);
+        setBookmarks(data.bookmarkedStories || []);
       } catch (error) {
         console.log(error);
       } finally {
