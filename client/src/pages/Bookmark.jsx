@@ -15,7 +15,7 @@ const api_url =
 }
 const Bookmark = () => {
   const { currentUser } = useSelector((state) => state.user);
-  const [bookmarks, setBookmarks] = useState(null);
+  const [bookmarks, setBookmarks] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedStory, setSelectedStory] = useState(null);
   const [selectedSlide, setSelectedSlide] = useState(null);
